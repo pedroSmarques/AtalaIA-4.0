@@ -1,0 +1,37 @@
+# Ambiente virtual Python
+venv/
+.venv/
+env/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+
+# Variáveis de ambiente / segredos
+.env
+.env.*
+
+# Datasets e gravações de câmera
+datasets/
+recordings/
+captures/
+*.mp4
+*.avi
+*.mkv
+
+# Pesos de modelo treinado
+*.pt
+*.h5
+*.onnx
+*.pb
+*.weights
+
+# IDEs
+.vscode/
+.idea/
+*.code-workspace
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
