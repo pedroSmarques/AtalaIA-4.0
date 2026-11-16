@@ -1,7 +1,7 @@
 import enum
 from sqlalchemy import Column, Integer, String, Enum, ForeignKey
 from sqlalchemy.orm import relationship
-from app.database import Base
+from src.database import Base
 
 class StatusCameraEnum(str, enum.Enum):
     ativa = "ativa"
