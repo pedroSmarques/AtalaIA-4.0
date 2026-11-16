@@ -2,7 +2,7 @@ import enum
 from sqlalchemy import Column, Integer, String, Text, Enum
 from sqlalchemy.orm import relationship
 from app.database import Base
-from app.models.associacoes import setor_usuario
+from src.models.associacoes import setor_usuario
 
 class NivelRiscoEnum(str, enum.Enum):
     baixo = "baixo"
