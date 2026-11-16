@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
-from app.database import Base
+from src.database import Base
 
 class Log(Base):
     __tablename__ = "logs"
