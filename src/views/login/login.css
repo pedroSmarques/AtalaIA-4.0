@@ -84,7 +84,7 @@ input:focus-visible {
     position: absolute;
     inset: 0;
 
-    background-image: url('img/fundo_logo.png');
+    background-image: url('views/assets/fundo_logo.avif');
     background-repeat: no-repeat;
     background-position: 107% center;
     background-size: 590px auto;
