@@ -1,7 +1,7 @@
 import enum
 from sqlalchemy import Column, Integer, DateTime, Enum, ForeignKey
 from sqlalchemy.orm import relationship
-from app.database import Base
+from src.database import Base
 
 class StatusEnvioEnum(str, enum.Enum):
     enviado = "enviado"
