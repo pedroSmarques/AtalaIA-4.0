@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logs do Sistema · ATALAIA</title>
+  <link rel="stylesheet" href="../assets/base.css">
+  <script src="../assets/base.js" defer></script>
+  <style>
+    .log-acao {
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px;font-weight:700;letter-spacing:.5px;
+      padding:3px 7px;border-radius:4px;
+      background:var(--bg-ciano);color:var(--ciano);
+    }
+    .log-acao.write  { background:var(--bg-laranja);color:var(--laranja); }
+    .log-acao.delete { background:var(--bg-vermelho);color:var(--vermelho); }
+    .log-acao.login  { background:var(--bg-verde);color:var(--verde); }
+    .detalhes-row {
+      display:none;background:rgba(255,255,255,.02);
+      padding:8px 20px 12px;
+      border-bottom:1px solid #2c3752;
+    }
+    .detalhes-row.aberto { display:block; }
+    .detalhes-row pre {
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px;color:var(--suave);
+      white-space:pre-wrap;word-break:break-all;
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="marca">
+      <div class="marca-icone"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div><h4 class="marca-nome">ATALAIA</h4><p class="marca-sub">SAFETY INTELLIGENCE</p></div>
+    </div>
+    <p class="secao-label">OPERAÇÃO</p>
+    <nav class="menu">
+      <a href="/gestor" class="menu-item"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>Dashboard</a>
+      <a href="/gestor/alertas" class="menu-item"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>Alertas</a>
+      <a href="/gestor/cameras" class="menu-item"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>Câmeras</a>
+      <a href="/gestor/usuarios" class="menu-item"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-1a7 7 0 0114 0v1"/><path d="M20 8v6M23 11h-6"/></svg>Usuários</a>
+      <a href="/gestor/setores" class="menu-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Setores</a>
+      <a href="/gestor/relatorios" class="menu-item"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>Relatórios</a>
+      <a href="/gestor/logs" class="menu-item ativo"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h8"/></svg>Logs do Sistema</a>
+    </nav>
+    <div class="sidebar-rodape">
+      <a href="/sair" class="menu-item"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sair</a>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <header class="topo">
+      <div class="topo-esquerda">
+        <h4 class="planta">PLANTA INDUSTRIAL · UNIDADE SUL</h4>
+        <p id="dataAtual" class="data"></p>
+      </div>
+      <div class="topo-direita">
+        <button id="btnNotif" class="sino" aria-label="Notificações" aria-expanded="false">
+          <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+          <span class="ponto" aria-hidden="true"></span>
+        </button>
+        <div class="usuario">
+          <div class="info"><strong>Ana Souza</strong><span class="cargo">GESTOR</span></div>
+          <div class="avatar" aria-hidden="true">AS</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="conteudo">
+      <div class="pag-header">
+        <div>
+          <p class="pag-rotulo">AUDITORIA</p>
+          <h1 class="pag-titulo">Logs do Sistema</h1>
+        </div>
+      </div>
+
+      <div class="filtros">
+        <button class="filtro ativo" data-filtro="todos">Todos</button>
+        <button class="filtro" data-filtro="LOGIN">Login</button>
+        <button class="filtro" data-filtro="UPDATE">Atualização</button>
+        <button class="filtro" data-filtro="CREATE">Criação</button>
+        <button class="filtro" data-filtro="DELETE">Exclusão</button>
+      </div>
+
+      <!-- Back-end: {% for log in logs %} -->
+      <div class="tabela-wrap">
+        <div class="tabela" id="tabelaLogs">
+          <div class="linha cabecalho" style="grid-template-columns:130px 110px 1fr 1fr 130px 36px">
+            <span>DATA/HORA</span><span>AÇÃO</span><span>TABELA</span><span>USUÁRIO</span><span>IP ORIGEM</span><span></span>
+          </div>
+
+          <div class="linha" data-status="LOGIN" style="grid-template-columns:130px 110px 1fr 1fr 130px 36px;min-height:52px" data-log-id="1">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">16/11 14:32</span>
+            <span><b class="log-acao login">LOGIN</b></span>
+            <span style="font-size:13px;color:var(--suave)">—</span>
+            <span style="font-size:13px">Rafael Mendes</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">192.168.1.22</span>
+            <button class="seta" aria-label="Expandir detalhes" aria-expanded="false" onclick="toggleDetalhes(this)">+</button>
+          </div>
+          <div class="detalhes-row" id="det-1">
+            <pre>Acesso bem-sucedido. Cargo: Supervisor.</pre><!-- {{ log.detalhes }} -->
+          </div>
+
+          <div class="linha" data-status="UPDATE" style="grid-template-columns:130px 110px 1fr 1fr 130px 36px;min-height:52px" data-log-id="2">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">16/11 14:28</span>
+            <span><b class="log-acao write">UPDATE</b></span>
+            <span style="font-size:13px;color:var(--suave)">Camera</span>
+            <span style="font-size:13px">Carlos Lima</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">192.168.1.10</span>
+            <button class="seta" aria-label="Expandir detalhes" aria-expanded="false" onclick="toggleDetalhes(this)">+</button>
+          </div>
+          <div class="detalhes-row" id="det-2">
+            <pre>id_registro_afetado: 7 | status: inativa → manutenção</pre>
+          </div>
+
+          <div class="linha" data-status="CREATE" style="grid-template-columns:130px 110px 1fr 1fr 130px 36px;min-height:52px" data-log-id="3">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">16/11 09:15</span>
+            <span><b class="log-acao">CREATE</b></span>
+            <span style="font-size:13px;color:var(--suave)">Incidente</span>
+            <span style="font-size:13px;color:var(--suave)">Sistema (IA)</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">127.0.0.1</span>
+            <button class="seta" aria-label="Expandir detalhes" aria-expanded="false" onclick="toggleDetalhes(this)">+</button>
+          </div>
+          <div class="detalhes-row" id="det-3">
+            <pre>id_registro_afetado: 2894 | tipo: Sem EPI | câmera: C-02</pre>
+          </div>
+
+          <div class="linha" data-status="DELETE" style="grid-template-columns:130px 110px 1fr 1fr 130px 36px;min-height:52px" data-log-id="4">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">15/11 17:40</span>
+            <span><b class="log-acao delete">DELETE</b></span>
+            <span style="font-size:13px;color:var(--suave)">Usuarios</span>
+            <span style="font-size:13px">Ana Souza</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">192.168.1.5</span>
+            <button class="seta" aria-label="Expandir detalhes" aria-expanded="false" onclick="toggleDetalhes(this)">+</button>
+          </div>
+          <div class="detalhes-row" id="det-4">
+            <pre>id_registro_afetado: 8 | Usuário Beatriz Costa removido.</pre>
+          </div>
+          <!-- Back-end: {% endfor %} -->
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="notifPainel" class="notif-painel" role="dialog" aria-label="Notificações">
+    <div class="notif-cabecalho"><h3>Notificações</h3></div>
+    <div class="notif-vazio">Nenhuma notificação.</div>
+  </div>
+
+</div><!-- .layout -->
+
+<nav class="nav-bottom" aria-label="Navegação principal">
+  <a href="/gestor" class="nav-item"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg><span>Dashboard</span></a>
+  <a href="/gestor/alertas" class="nav-item"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg><span>Alertas</span></a>
+  <a href="/gestor/logs" class="nav-item ativo" aria-current="page"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h8"/></svg><span>Logs</span></a>
+  <a href="/gestor/relatorios" class="nav-item"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg><span>Relatórios</span></a>
+</nav>
+
+<script>
+function toggleDetalhes(btn) {
+  const row = btn.closest('.linha');
+  const id  = row.dataset.logId;
+  const det = document.getElementById('det-' + id);
+  if (!det) return;
+  const aberto = det.classList.toggle('aberto');
+  btn.textContent = aberto ? '−' : '+';
+  btn.setAttribute('aria-expanded', String(aberto));
+}
+</script>
+
+</body>
+</html>

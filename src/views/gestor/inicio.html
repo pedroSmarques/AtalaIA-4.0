@@ -1,129 +1,300 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atalaia 4.0</title>
-    <link href="estilo.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard · ATALAIA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../assets/base.css">
+  <script src="../assets/base.js" defer></script>
 </head>
-
 <body>
-    <div id="esquerda">
-        <div id="icon"> <button><img src="#"></button>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="marca">
+      <div class="marca-icone">
+        <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <div>
+        <h4 class="marca-nome">ATALAIA</h4>
+        <p class="marca-sub">SAFETY INTELLIGENCE</p>
+      </div>
+    </div>
+
+    <p class="secao-label">OPERAÇÃO</p>
+    <nav class="menu">
+      <a href="/gestor" class="menu-item ativo">
+        <svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="/gestor/alertas" class="menu-item">
+        <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+        Alertas
+        <!-- Back-end: <span class="badge">{{ incidentes_abertos }}</span> se > 0 -->
+      </a>
+      <a href="/gestor/cameras" class="menu-item">
+        <svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
+        Câmeras
+      </a>
+      <a href="/gestor/usuarios" class="menu-item">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-1a7 7 0 0114 0v1"/><path d="M20 8v6M23 11h-6"/></svg>
+        Usuários
+      </a>
+      <a href="/gestor/setores" class="menu-item">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Setores
+      </a>
+      <a href="/gestor/relatorios" class="menu-item">
+        <svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>
+        Relatórios
+      </a>
+      <a href="/gestor/logs" class="menu-item">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h8"/></svg>
+        Logs do Sistema
+      </a>
+    </nav>
+
+    <div class="sidebar-rodape">
+      <a href="/configuracoes" class="menu-item">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Configurações
+      </a>
+      <a href="/sair" class="menu-item">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sair
+      </a>
+    </div>
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <div class="principal">
+
+    <header class="topo">
+      <div class="topo-esquerda">
+        <h4 class="planta">PLANTA INDUSTRIAL · UNIDADE SUL</h4>
+        <p id="dataAtual" class="data"></p>
+      </div>
+      <div class="topo-direita">
+        <button id="btnNotif" class="sino" aria-label="Notificações" aria-expanded="false">
+          <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+          <!-- Back-end: esconder se {{ notif_nao_lidas }} == 0 -->
+          <span class="ponto" aria-hidden="true"></span>
+        </button>
+        <div class="usuario">
+          <div class="info">
+            <strong>Ana Souza</strong><!-- {{ usuario_nome }} -->
+            <span class="cargo">GESTOR</span><!-- {{ usuario_cargo | upper }} -->
+          </div>
+          <div class="avatar" aria-hidden="true">AS</div><!-- {{ usuario_iniciais }} -->
         </div>
-        <div id="icon-seguranca"></div>
-        <h1>ATALAIA 4.0</h1>
-    </div>
-    <div id="text-icon2">
-        <p>Inteligência de Segurança</p>
-    </div>
-    <div id="telas-internas">
-        <a href="#">Painel Principal</a>
-        <a href="#">Central de Câmeras</a>
-        <a href="#">Chamados <span id="chamado"></span></a>
-        <a href="#">Relatórios</a>
-        <a href="#">Acidentes</a>
-        <a href="#">Logs Sistema</a>
+      </div>
+    </header>
 
+    <main class="conteudo">
 
-    </div>
-    <div id="direita">
-        <header>
-            <div>Planta Industrial ‧ Unidade Sul </div>
-            <div id="Data"></div>
-            <div id="sino-notificacao">
-                <img src="#">
-                <span></span>
+      <div class="pag-header">
+        <div>
+          <p class="pag-rotulo">VISÃO COMPUTACIONAL</p>
+          <h1 class="pag-titulo">Painel Principal</h1>
+        </div>
+        <a href="/gestor/cameras" class="btn btn-primario">
+          <svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
+          Abrir Central de Câmeras
+        </a>
+      </div>
+
+      <!-- KPI CARDS -->
+      <!-- Back-end: cameras_ativas, cameras_total, incidentes_hoje, incidentes_abertos, conformidade_pct -->
+      <div class="cards-grid">
+        <div class="card-indicador">
+          <div class="card-icone ciano">
+            <svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
+          </div>
+          <div class="card-corpo">
+            <p class="card-rotulo">CÂMERAS ONLINE</p>
+            <p class="card-valor">12</p><!-- {{ cameras_ativas }} -->
+            <p class="card-desc">de 14 no total</p><!-- de {{ cameras_total }} no total -->
+          </div>
+        </div>
+
+        <div class="card-indicador">
+          <div class="card-icone laranja">
+            <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+          </div>
+          <div class="card-corpo">
+            <p class="card-rotulo">ALERTAS HOJE</p>
+            <p class="card-valor">7</p><!-- {{ incidentes_hoje }} -->
+            <p class="card-desc">detectados pela IA</p>
+          </div>
+        </div>
+
+        <div class="card-indicador">
+          <div class="card-icone vermelho">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="card-corpo">
+            <p class="card-rotulo">ALERTAS EM ABERTO</p>
+            <p class="card-valor">3</p><!-- {{ incidentes_abertos }} -->
+            <p class="card-desc">aguardando atendimento</p>
+          </div>
+        </div>
+
+        <div class="card-indicador">
+          <div class="card-icone verde">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="card-corpo">
+            <p class="card-rotulo">CONFORMIDADE</p>
+            <p class="card-valor">94%</p><!-- {{ conformidade_pct }}% -->
+            <p class="card-desc">do turno atual</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISTRIBUIÇÃO POR SETOR -->
+      <div class="secao-card">
+        <div class="secao-card-header">
+          <div>
+            <h2 class="secao-card-titulo">Distribuição de Alertas</h2>
+            <p class="secao-card-sub">Ocorrências identificadas por setor</p>
+          </div>
+        </div>
+        <!-- Back-end: {% for s in distribuicao_setores %} -->
+        <!-- s = { nome_setor, count, percentual } -->
+        <div class="barra-row">
+          <span class="barra-label">Produção</span>
+          <div class="barra-container"><div class="barra-fill" style="width:62%"></div></div>
+          <span class="barra-pct">62%</span>
+        </div>
+        <div class="barra-row">
+          <span class="barra-label">Logística</span>
+          <div class="barra-container"><div class="barra-fill laranja" style="width:20%"></div></div>
+          <span class="barra-pct">20%</span>
+        </div>
+        <div class="barra-row">
+          <span class="barra-label">Expedição</span>
+          <div class="barra-container"><div class="barra-fill amarelo" style="width:12%"></div></div>
+          <span class="barra-pct">12%</span>
+        </div>
+        <div class="barra-row">
+          <span class="barra-label">Manutenção</span>
+          <div class="barra-container"><div class="barra-fill" style="width:6%"></div></div>
+          <span class="barra-pct">6%</span>
+        </div>
+        <!-- Back-end: {% endfor %} -->
+      </div>
+
+      <!-- INCIDENTES RECENTES -->
+      <div class="secao-card">
+        <div class="secao-card-header">
+          <div>
+            <h2 class="secao-card-titulo">Últimos Incidentes</h2>
+            <p class="secao-card-sub">Atualizado em tempo real</p>
+          </div>
+          <a href="/gestor/alertas" class="btn btn-secundario btn-sm">Ver todos</a>
+        </div>
+
+        <div class="tabela-wrap">
+          <div class="tabela">
+            <div class="linha cabecalho" style="grid-template-columns:90px 1.4fr 1fr 1fr 1fr 36px">
+              <span>REGISTRO</span><span>OCORRÊNCIA</span><span>CÂMERA</span><span>TIPO</span><span>STATUS</span><span></span>
             </div>
-            <div id="nome-perfil"></div>
-            <p>GESTOR</p>
-            <div id="perfil-visual"></div>
-
-
-        </header>
-        <main>
-            <div id="dashboard">
-                <P>Visão Computacional</P>
-                <h1>Painel Principal</h1>
-                <button><img src="">Abrir Central de Câmeras</button>
+            <!-- Back-end: {% for inc in incidentes_recentes %} -->
+            <div class="linha" style="grid-template-columns:90px 1.4fr 1fr 1fr 1fr 36px">
+              <div>
+                <p style="font-weight:600;font-size:13px">#A-2894</p><!-- #A-{{ inc.id_incidente }} -->
+                <p class="reg-id">14:32</p><!-- {{ inc.data_hora_deteccao | hora }} -->
+              </div>
+              <span style="font-size:14px;color:#fff">Capacete ausente</span><!-- {{ inc.tipo_infracao.nome }} -->
+              <span style="font-size:13px;color:var(--suave)">Produção <small>C-02</small></span><!-- {{ inc.camera.setor.nome_setor }} <small>{{ inc.camera.codigo_identificador }}</small> -->
+              <span style="font-size:13px;color:var(--suave)">Sem EPI</span><!-- {{ inc.tipo_infracao.gravidade }} -->
+              <span><b class="status pendente">PENDENTE</b></span><!-- <b class="status {{ inc.status_atendimento }}">{{ inc.status_atendimento | upper }}</b> -->
+              <a href="/gestor/alertas/{{ inc.id_incidente }}" class="seta" aria-label="Ver incidente">→</a>
             </div>
-            <div id="cameras">
-                <p>CÂMERAS ONLINE</p>
-                <span></span>
-                <H1></H1>
-                <p>Atualizado há<span id="tempo-camera"></span></p>
+            <div class="linha" style="grid-template-columns:90px 1.4fr 1fr 1fr 1fr 36px">
+              <div>
+                <p style="font-weight:600;font-size:13px">#A-2891</p>
+                <p class="reg-id">13:58</p>
+              </div>
+              <span style="font-size:14px;color:#fff">Colete refletivo ausente</span>
+              <span style="font-size:13px;color:var(--suave)">Logística <small>C-03</small></span>
+              <span style="font-size:13px;color:var(--suave)">Sem EPI</span>
+              <span><b class="status atendimento">EM ATENDIMENTO</b></span>
+              <a href="#" class="seta" aria-label="Ver incidente">→</a>
+            </div>
+            <div class="linha" style="grid-template-columns:90px 1.4fr 1fr 1fr 1fr 36px">
+              <div>
+                <p style="font-weight:600;font-size:13px">#A-2886</p>
+                <p class="reg-id">12:40</p>
+              </div>
+              <span style="font-size:14px;color:#fff">Óculos ausentes</span>
+              <span style="font-size:13px;color:var(--suave)">Produção <small>C-05</small></span>
+              <span style="font-size:13px;color:var(--suave)">Sem EPI</span>
+              <span><b class="status resolvido">RESOLVIDO</b></span>
+              <a href="#" class="seta" aria-label="Ver incidente">→</a>
+            </div>
+            <!-- Back-end: {% else %}<div class="estado-vazio"><p>Nenhum incidente registrado.</p></div>{% endfor %} -->
+          </div>
+        </div>
+      </div>
 
-                <div id="alertas">
-                    <p>ALERTAS HOJE</p>
-                    <Span></Span>
-                    <h1></h1>
-                    <P>Atualizado há <span id="tempo-alerta"></span></P>
+    </main>
+  </div><!-- .principal -->
 
-                </div>
-                <div id="alertas em aberto">
-                    <p>ALERTAS EM ABERTO</p>
-                    <Span></Span>
-                    <h1></h1>
-                    <P>Atualizado há <span id="tempo-alerta"></span></P>
-
-                </div>
-                <div id="alertas">
-                    <p>CONFORMIDADE DO TURNO</p>
-                    <Span></Span>
-                    <h1></h1>
-                    <P>Atualizado há <span id="tempo-turno"></span></P>
-
-                </div>
-
-<div id="distribuicao-alerta">
-    <h2>Distribuição de alertas</h2>
-    <p>Ocorrências identificadas por setor</p>
-    <div id="alerta-producao">
-        <span></span>
-        <div id="resultado-producao"></div>
-        <span class="nome">Produção</span>
+  <!-- PAINEL DE NOTIFICAÇÕES -->
+  <div id="notifPainel" class="notif-painel" role="dialog" aria-label="Notificações">
+    <div class="notif-cabecalho">
+      <h3>Notificações</h3>
+      <button class="btn-sm btn-secundario">Marcar lidas</button>
     </div>
+    <ul class="notif-lista">
+      <!-- Back-end: {% for n in notificacoes %} -->
+      <li class="notif-item nao-lida">
+        <div class="notif-icone"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg></div>
+        <div class="notif-corpo">
+          <p class="notif-titulo">Capacete ausente — Produção C-02</p>
+          <p class="notif-desc">Incidente #A-2894</p>
+          <span class="notif-hora">há 5 min</span>
+        </div>
+      </li>
+      <!-- Back-end: {% else %}<li class="notif-vazio">Nenhuma notificação.</li>{% endfor %} -->
+    </ul>
+  </div>
+
+</div><!-- .layout -->
+
+<!-- NAV BOTTOM (mobile) -->
+<nav class="nav-bottom" aria-label="Navegação principal">
+  <a href="/gestor" class="nav-item ativo" aria-current="page">
+    <svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>
+    <span>Dashboard</span>
+  </a>
+  <a href="/gestor/alertas" class="nav-item">
+    <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+    <span>Alertas</span>
+  </a>
+  <a href="/gestor/cameras" class="nav-item">
+    <svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
+    <span>Câmeras</span>
+  </a>
+  <a href="/gestor/usuarios" class="nav-item">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>
+    <span>Usuários</span>
+  </a>
+</nav>
+
+<!-- BANNER PUSH -->
+<div id="pushBanner" class="push-banner" role="banner">
+  <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+  <p>Receba alertas instantâneos de novos incidentes.</p>
+  <div class="push-acoes">
+    <button id="btnPermitirPush" class="btn btn-primario btn-sm">Permitir</button>
+    <button id="btnRecusarPush"  class="btn btn-secundario btn-sm">Agora não</button>
+  </div>
 </div>
-
- <div id="alerta-logistica">
-        <span></span>
-        <div id="resultado-logistica"></div>
-        <span class="nome">Logística</span>
-    </div>
-
-     <div id="alerta-acesso">
-        <span></span>
-        <div id="resultado-acesso"></div>
-        <span class="nome">Acesso</span>
-    </div>
-</div>
-
- <div id="alerta-expedicao">
-        <span></span>
-        <div id="resultado-expedicao"></div>
-        <span class="nome">Expedição</span>
-    </div>
-     <div id="alerta-manutencao">
-        <span></span>
-        <div id="resultado-manutencao"></div>
-        <span class="nome">Manutenção</span>
-    </div>
-    <div id="plantao">
-        <h1>Plantão agora</h1>
-        <p>Status da operação </p>
-        <span class>Câmeras monitoradas</span>
-        <span>Câmeras monitoradas</span>
-
-    </div>
-
-
-
-
-          
-        </main>
-
 
 </body>
-
 </html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuários · ATALAIA</title>
+  <link rel="stylesheet" href="../assets/base.css">
+  <script src="../assets/base.js" defer></script>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="marca">
+      <div class="marca-icone"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div><h4 class="marca-nome">ATALAIA</h4><p class="marca-sub">SAFETY INTELLIGENCE</p></div>
+    </div>
+    <p class="secao-label">OPERAÇÃO</p>
+    <nav class="menu">
+      <a href="/gestor" class="menu-item"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>Dashboard</a>
+      <a href="/gestor/alertas" class="menu-item"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>Alertas</a>
+      <a href="/gestor/cameras" class="menu-item"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>Câmeras</a>
+      <a href="/gestor/usuarios" class="menu-item ativo"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-1a7 7 0 0114 0v1"/><path d="M20 8v6M23 11h-6"/></svg>Usuários</a>
+      <a href="/gestor/setores" class="menu-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Setores</a>
+      <a href="/gestor/relatorios" class="menu-item"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>Relatórios</a>
+      <a href="/gestor/logs" class="menu-item"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h8"/></svg>Logs do Sistema</a>
+    </nav>
+    <div class="sidebar-rodape">
+      <a href="/sair" class="menu-item"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sair</a>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <header class="topo">
+      <div class="topo-esquerda">
+        <h4 class="planta">PLANTA INDUSTRIAL · UNIDADE SUL</h4>
+        <p id="dataAtual" class="data"></p>
+      </div>
+      <div class="topo-direita">
+        <button id="btnNotif" class="sino" aria-label="Notificações" aria-expanded="false">
+          <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+          <span class="ponto" aria-hidden="true"></span>
+        </button>
+        <div class="usuario">
+          <div class="info"><strong>Ana Souza</strong><span class="cargo">GESTOR</span></div>
+          <div class="avatar" aria-hidden="true">AS</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="conteudo">
+      <div class="pag-header">
+        <div>
+          <p class="pag-rotulo">CONTROLE DE ACESSO</p>
+          <h1 class="pag-titulo">Gestão de Usuários</h1>
+        </div>
+        <button class="btn btn-primario" data-modal-open="modalUsuario" aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          Novo Usuário
+        </button>
+      </div>
+
+      <!-- Filtros por cargo / status -->
+      <div class="filtros">
+        <button class="filtro ativo" data-filtro="todos">Todos</button>
+        <button class="filtro" data-filtro="Gestor">Gestor</button>
+        <button class="filtro" data-filtro="Supervisor">Supervisor</button>
+        <button class="filtro" data-filtro="Tecnico">Técnico TI</button>
+      </div>
+
+      <!-- Tabela de usuários -->
+      <!-- Back-end: {% for u in usuarios %} -->
+      <div class="tabela-wrap">
+        <div class="tabela">
+          <div class="linha cabecalho" style="grid-template-columns:1.4fr 1.6fr 100px 100px 110px 100px">
+            <span>NOME</span><span>E-MAIL</span><span>CARGO</span><span>STATUS</span><span>CRIAÇÃO</span><span>AÇÕES</span>
+          </div>
+
+          <div class="linha" data-status="Supervisor" style="grid-template-columns:1.4fr 1.6fr 100px 100px 110px 100px">
+            <span style="font-size:14px;font-weight:500;color:#fff">Rafael Mendes</span><!-- {{ u.nome }} -->
+            <span style="font-size:12px;color:var(--suave);font-family:'JetBrains Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">rafael.mendes@atalaia.com</span>
+            <span style="font-size:13px">Supervisor</span><!-- {{ u.cargo.value }} -->
+            <span><b class="status ativo">ATIVO</b></span><!-- {{ u.status_conta.value }} -->
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">10/11/2026</span><!-- {{ u.data_criacao | date_fmt }} -->
+            <div class="acoes">
+              <button class="btn-icone" data-modal-open="modalUsuario" aria-label="Editar Rafael Mendes" title="Editar">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="btn-icone btn-perigo" aria-label="Bloquear Rafael Mendes" title="Bloquear">
+                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="linha" data-status="Tecnico" style="grid-template-columns:1.4fr 1.6fr 100px 100px 110px 100px">
+            <span style="font-size:14px;font-weight:500;color:#fff">Carlos Lima</span>
+            <span style="font-size:12px;color:var(--suave);font-family:'JetBrains Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">carlos.lima@atalaia.com</span>
+            <span style="font-size:13px">Técnico TI</span>
+            <span><b class="status ativo">ATIVO</b></span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">08/11/2026</span>
+            <div class="acoes">
+              <button class="btn-icone" data-modal-open="modalUsuario" aria-label="Editar Carlos Lima" title="Editar">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="btn-icone btn-perigo" aria-label="Bloquear Carlos Lima" title="Bloquear">
+                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="linha" data-status="Supervisor" style="grid-template-columns:1.4fr 1.6fr 100px 100px 110px 100px">
+            <span style="font-size:14px;font-weight:500;color:#fff">Beatriz Costa</span>
+            <span style="font-size:12px;color:var(--suave);font-family:'JetBrains Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">beatriz.costa@atalaia.com</span>
+            <span style="font-size:13px">Supervisor</span>
+            <span><b class="status bloqueado">BLOQUEADO</b></span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">01/11/2026</span>
+            <div class="acoes">
+              <button class="btn-icone" data-modal-open="modalUsuario" aria-label="Editar Beatriz Costa" title="Editar">
+                <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="btn-icone" aria-label="Desbloquear Beatriz Costa" title="Desbloquear">
+                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 019.9-1"/></svg>
+              </button>
+            </div>
+          </div>
+          <!-- Back-end: {% else %}<div class="estado-vazio"><p>Nenhum usuário encontrado.</p></div>{% endfor %} -->
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="notifPainel" class="notif-painel" role="dialog" aria-label="Notificações">
+    <div class="notif-cabecalho"><h3>Notificações</h3></div>
+    <div class="notif-vazio">Nenhuma notificação.</div>
+  </div>
+
+</div><!-- .layout -->
+
+<!-- MODAL CRIAR/EDITAR USUÁRIO -->
+<div id="modalUsuario" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="tituloModalUsr">
+  <div class="modal">
+    <div class="modal-topo">
+      <h2 class="modal-titulo" id="tituloModalUsr">Novo Usuário</h2>
+      <button class="modal-fechar" data-modal-close aria-label="Fechar">
+        <svg viewBox="0 0 24 24" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-corpo">
+      <form class="form-grid" id="formUsuario">
+        <div class="campo">
+          <label for="nomeUsr">Nome completo *</label>
+          <input type="text" id="nomeUsr" name="nome" placeholder="Ex: João da Silva" required>
+        </div>
+        <div class="campo">
+          <label for="cpfUsr">CPF *</label>
+          <input type="text" id="cpfUsr" name="cpf" placeholder="000.000.000-00" required>
+        </div>
+        <div class="campo" style="grid-column:1/-1">
+          <label for="emailUsr">E-mail corporativo *</label>
+          <input type="email" id="emailUsr" name="email" placeholder="nome.sobrenome@atalaia.com" required>
+        </div>
+        <div class="campo">
+          <label for="cargoUsr">Cargo *</label>
+          <select id="cargoUsr" name="cargo" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="Gestor">Gestor</option>
+            <option value="Supervisor">Supervisor</option>
+            <option value="Tecnico">Técnico TI</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="statusUsr">Status *</label>
+          <select id="statusUsr" name="status_conta" required>
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+            <option value="bloqueado">Bloqueado</option>
+          </select>
+        </div>
+        <div class="campo" style="grid-column:1/-1">
+          <label for="senhaUsr">Senha provisória *</label>
+          <input type="password" id="senhaUsr" name="senha" placeholder="Mínimo 8 caracteres" minlength="8">
+          <p style="font-size:11px;color:var(--suave);margin-top:4px">O usuário deverá trocar na primeira entrada.</p>
+        </div>
+      </form>
+    </div>
+    <div class="modal-rodape">
+      <button class="btn btn-secundario" data-modal-close>Cancelar</button>
+      <button class="btn btn-primario" type="submit" form="formUsuario">Criar usuário</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV BOTTOM -->
+<nav class="nav-bottom" aria-label="Navegação principal">
+  <a href="/gestor" class="nav-item"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg><span>Dashboard</span></a>
+  <a href="/gestor/alertas" class="nav-item"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg><span>Alertas</span></a>
+  <a href="/gestor/cameras" class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg><span>Câmeras</span></a>
+  <a href="/gestor/usuarios" class="nav-item ativo" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg><span>Usuários</span></a>
+</nav>
+
+</body>
+</html>

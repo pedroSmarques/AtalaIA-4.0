@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatórios · ATALAIA</title>
+  <link rel="stylesheet" href="../assets/base.css">
+  <script src="../assets/base.js" defer></script>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="marca">
+      <div class="marca-icone"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div><h4 class="marca-nome">ATALAIA</h4><p class="marca-sub">SAFETY INTELLIGENCE</p></div>
+    </div>
+    <p class="secao-label">OPERAÇÃO</p>
+    <nav class="menu">
+      <a href="/gestor" class="menu-item"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>Dashboard</a>
+      <a href="/gestor/alertas" class="menu-item"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>Alertas</a>
+      <a href="/gestor/cameras" class="menu-item"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>Câmeras</a>
+      <a href="/gestor/usuarios" class="menu-item"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-1a7 7 0 0114 0v1"/><path d="M20 8v6M23 11h-6"/></svg>Usuários</a>
+      <a href="/gestor/setores" class="menu-item"><svg viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Setores</a>
+      <a href="/gestor/relatorios" class="menu-item ativo"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>Relatórios</a>
+      <a href="/gestor/logs" class="menu-item"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h8"/></svg>Logs do Sistema</a>
+    </nav>
+    <div class="sidebar-rodape">
+      <a href="/sair" class="menu-item"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sair</a>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <header class="topo">
+      <div class="topo-esquerda">
+        <h4 class="planta">PLANTA INDUSTRIAL · UNIDADE SUL</h4>
+        <p id="dataAtual" class="data"></p>
+      </div>
+      <div class="topo-direita">
+        <button id="btnNotif" class="sino" aria-label="Notificações" aria-expanded="false">
+          <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+          <span class="ponto" aria-hidden="true"></span>
+        </button>
+        <div class="usuario">
+          <div class="info"><strong>Ana Souza</strong><span class="cargo">GESTOR</span></div>
+          <div class="avatar" aria-hidden="true">AS</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="conteudo">
+      <div class="pag-header">
+        <div>
+          <p class="pag-rotulo">ANÁLISE</p>
+          <h1 class="pag-titulo">Relatórios</h1>
+        </div>
+        <!-- Filtro por período — Back-end: form action="/gestor/relatorios" method="GET" -->
+        <form style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div class="campo" style="margin:0">
+            <input type="date" name="data_inicio" value="2026-11-01" aria-label="Data início"
+              style="height:40px;padding:0 12px;background:#0b0f1a;border:1px solid var(--borda);border-radius:var(--r-md);color:var(--texto);font-size:13px;">
+          </div>
+          <span style="color:var(--suave);font-size:13px">até</span>
+          <div class="campo" style="margin:0">
+            <input type="date" name="data_fim" value="2026-11-16" aria-label="Data fim"
+              style="height:40px;padding:0 12px;background:#0b0f1a;border:1px solid var(--borda);border-radius:var(--r-md);color:var(--texto);font-size:13px;">
+          </div>
+          <button type="submit" class="btn btn-secundario btn-sm">Filtrar</button>
+        </form>
+      </div>
+
+      <!-- KPI do período -->
+      <!-- Back-end: total_incidentes, media_confianca_ia, pct_resolvidos, tempo_medio_resolucao_hrs -->
+      <div class="cards-grid" style="margin-bottom:24px">
+        <div class="card-indicador">
+          <div class="card-icone laranja"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg></div>
+          <div class="card-corpo">
+            <p class="card-rotulo">TOTAL NO PERÍODO</p>
+            <p class="card-valor">42</p><!-- {{ total_incidentes }} -->
+            <p class="card-desc">incidentes detectados</p>
+          </div>
+        </div>
+        <div class="card-indicador">
+          <div class="card-icone ciano"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="card-corpo">
+            <p class="card-rotulo">CONFIANÇA MÉDIA IA</p>
+            <p class="card-valor">91%</p><!-- {{ media_confianca_ia }}% -->
+            <p class="card-desc">nas detecções</p>
+          </div>
+        </div>
+        <div class="card-indicador">
+          <div class="card-icone verde"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="card-corpo">
+            <p class="card-rotulo">TAXA DE RESOLUÇÃO</p>
+            <p class="card-valor">88%</p><!-- {{ pct_resolvidos }}% -->
+            <p class="card-desc">dos incidentes</p>
+          </div>
+        </div>
+        <div class="card-indicador">
+          <div class="card-icone amarelo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="card-corpo">
+            <p class="card-rotulo">TEMPO MÉDIO</p>
+            <p class="card-valor">1,4h</p><!-- {{ tempo_medio_resolucao_hrs }}h -->
+            <p class="card-desc">para resolução</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Por tipo de infração -->
+      <div class="secao-card">
+        <div class="secao-card-header">
+          <h2 class="secao-card-titulo">Por Tipo de Infração</h2>
+          <p class="secao-card-sub">Ocorrências por categoria</p>
+        </div>
+        <!-- Back-end: {% for t in por_tipo %} t = {nome, gravidade, count, percentual} -->
+        <div class="barra-row">
+          <span class="barra-label" style="font-size:13px">Sem EPI</span>
+          <div class="barra-container"><div class="barra-fill laranja" style="width:71%"></div></div>
+          <span class="barra-pct">30</span><!-- {{ t.count }} -->
+        </div>
+        <div class="barra-row">
+          <span class="barra-label" style="font-size:13px">Zona de risco</span>
+          <div class="barra-container"><div class="barra-fill" style="width:19%"></div></div>
+          <span class="barra-pct">8</span>
+        </div>
+        <div class="barra-row">
+          <span class="barra-label" style="font-size:13px">Outros</span>
+          <div class="barra-container"><div class="barra-fill amarelo" style="width:10%"></div></div>
+          <span class="barra-pct">4</span>
+        </div>
+        <!-- Back-end: {% endfor %} -->
+      </div>
+
+      <!-- Incidentes resolvidos recentes -->
+      <div class="secao-card">
+        <div class="secao-card-header">
+          <h2 class="secao-card-titulo">Incidentes Resolvidos</h2>
+        </div>
+        <div class="tabela-wrap">
+          <div class="tabela">
+            <div class="linha cabecalho" style="grid-template-columns:90px 1fr 1fr 100px 120px">
+              <span>REGISTRO</span><span>TIPO</span><span>CÂMERA / SETOR</span><span>STATUS</span><span>RESOLUÇÃO</span>
+            </div>
+            <!-- Back-end: {% for inc in incidentes_resolvidos %} -->
+            <div class="linha" style="grid-template-columns:90px 1fr 1fr 100px 120px;min-height:56px">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700">#A-2886</span>
+              <span style="font-size:13px;color:#fff">Capacete ausente</span>
+              <span style="font-size:13px;color:var(--suave)">Produção <small>C-02</small></span>
+              <span><b class="status resolvido">RESOLVIDO</b></span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">16/11 15:10</span>
+            </div>
+            <div class="linha" style="grid-template-columns:90px 1fr 1fr 100px 120px;min-height:56px">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700">#A-2879</span>
+              <span style="font-size:13px;color:#fff">Óculos ausentes</span>
+              <span style="font-size:13px;color:var(--suave)">Expedição <small>C-04</small></span>
+              <span><b class="status resolvido">RESOLVIDO</b></span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">16/11 12:05</span>
+            </div>
+            <!-- Back-end: {% endfor %} -->
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="notifPainel" class="notif-painel" role="dialog" aria-label="Notificações">
+    <div class="notif-cabecalho"><h3>Notificações</h3></div>
+    <div class="notif-vazio">Nenhuma notificação.</div>
+  </div>
+
+</div><!-- .layout -->
+
+<nav class="nav-bottom" aria-label="Navegação principal">
+  <a href="/gestor" class="nav-item"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg><span>Dashboard</span></a>
+  <a href="/gestor/alertas" class="nav-item"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg><span>Alertas</span></a>
+  <a href="/gestor/cameras" class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg><span>Câmeras</span></a>
+  <a href="/gestor/relatorios" class="nav-item ativo" aria-current="page"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg><span>Relatórios</span></a>
+</nav>
+
+</body>
+</html>
