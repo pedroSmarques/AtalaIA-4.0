@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard · ATALAIA</title>
+  <link rel="stylesheet" href="../assets/base.css">
+  <script src="../assets/base.js" defer></script>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="marca">
+      <div class="marca-icone">
+        <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <div>
+        <h4 class="marca-nome">ATALAIA</h4>
+        <p class="marca-sub">SAFETY INTELLIGENCE</p>
+      </div>
+    </div>
+
+    <p class="secao-label">TÉCNICO</p>
+    <nav class="menu">
+      <a href="/tecnico" class="menu-item ativo">
+        <svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="/tecnico/cameras" class="menu-item">
+        <svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
+        Câmeras
+      </a>
+      <a href="/tecnico/logs" class="menu-item">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h8"/></svg>
+        Logs do Sistema
+      </a>
+    </nav>
+
+    <div class="sidebar-rodape">
+      <a href="/configuracoes" class="menu-item">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Configurações
+      </a>
+      <a href="/sair" class="menu-item">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sair
+      </a>
+    </div>
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <div class="principal">
+
+    <header class="topo">
+      <div class="topo-esquerda">
+        <h4 class="planta">PLANTA INDUSTRIAL · UNIDADE SUL</h4>
+        <p id="dataAtual" class="data"></p>
+      </div>
+      <div class="topo-direita">
+        <button id="btnNotif" class="sino" aria-label="Notificações" aria-expanded="false">
+          <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+          <span class="ponto" aria-hidden="true"></span>
+        </button>
+        <div class="usuario">
+          <div class="info">
+            <strong>Carlos Lima</strong><!-- {{ usuario_nome }} -->
+            <span class="cargo">TÉCNICO TI</span>
+          </div>
+          <div class="avatar" aria-hidden="true">CL</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="conteudo">
+
+      <div class="pag-header">
+        <div>
+          <p class="pag-rotulo">INFRAESTRUTURA</p>
+          <h1 class="pag-titulo">Status do Sistema</h1>
+        </div>
+        <a href="/tecnico/cameras" class="btn btn-primario">
+          <svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
+          Gerenciar Câmeras
+        </a>
+      </div>
+
+      <!-- KPI CÂMERAS -->
+      <!-- Back-end: cameras_ativas, cameras_inativas, cameras_manutencao, cameras_total -->
+      <div class="cards-grid">
+        <div class="card-indicador">
+          <div class="card-icone verde">
+            <svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
+          </div>
+          <div class="card-corpo">
+            <p class="card-rotulo">CÂMERAS ATIVAS</p>
+            <p class="card-valor">12</p><!-- {{ cameras_ativas }} -->
+            <p class="card-desc">em operação</p>
+          </div>
+        </div>
+        <div class="card-indicador">
+          <div class="card-icone vermelho">
+            <svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+          </div>
+          <div class="card-corpo">
+            <p class="card-rotulo">INATIVAS</p>
+            <p class="card-valor">1</p><!-- {{ cameras_inativas }} -->
+            <p class="card-desc">sem sinal</p>
+          </div>
+        </div>
+        <div class="card-indicador">
+          <div class="card-icone amarelo">
+            <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="card-corpo">
+            <p class="card-rotulo">MANUTENÇÃO</p>
+            <p class="card-valor">1</p><!-- {{ cameras_manutencao }} -->
+            <p class="card-desc">em intervenção</p>
+          </div>
+        </div>
+        <div class="card-indicador">
+          <div class="card-icone ciano">
+            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="card-corpo">
+            <p class="card-rotulo">UPTIME HOJE</p>
+            <p class="card-valor">99%</p><!-- {{ uptime_pct }}% (calculado pelo back-end) -->
+            <p class="card-desc">disponibilidade</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CÂMERAS COM PROBLEMA -->
+      <div class="secao-card">
+        <div class="secao-card-header">
+          <div>
+            <h2 class="secao-card-titulo">Câmeras com Problema</h2>
+            <p class="secao-card-sub">Requerem atenção técnica</p>
+          </div>
+          <a href="/tecnico/cameras" class="btn btn-secundario btn-sm">Ver todas</a>
+        </div>
+
+        <!-- Back-end: {% for cam in cameras_com_problema %} -->
+        <!-- cam = Camera com status inativa ou manutencao -->
+        <div class="tabela-wrap">
+          <div class="tabela">
+            <div class="linha cabecalho" style="grid-template-columns:1fr 1fr 1fr 1fr">
+              <span>CÓDIGO</span><span>SETOR</span><span>STATUS</span><span>AÇÃO</span>
+            </div>
+            <div class="linha" style="grid-template-columns:1fr 1fr 1fr 1fr">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:12px">C-07</span><!-- {{ cam.codigo_identificador }} -->
+              <span style="font-size:14px;color:var(--suave)">Expedição</span><!-- {{ cam.setor.nome_setor }} -->
+              <span><b class="status inativa">INATIVA</b></span>
+              <div class="acoes">
+                <a href="/tecnico/cameras/7" class="btn btn-secundario btn-sm">Editar</a><!-- /tecnico/cameras/{{ cam.id_camera }} -->
+              </div>
+            </div>
+            <div class="linha" style="grid-template-columns:1fr 1fr 1fr 1fr">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:12px">C-11</span>
+              <span style="font-size:14px;color:var(--suave)">Manutenção</span>
+              <span><b class="status manutencao">MANUTENÇÃO</b></span>
+              <div class="acoes">
+                <a href="/tecnico/cameras/11" class="btn btn-secundario btn-sm">Editar</a>
+              </div>
+            </div>
+            <!-- Back-end: {% else %} -->
+            <!-- <div class="estado-vazio"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><p>Todas as câmeras estão operacionais.</p></div> -->
+            <!-- Back-end: {% endfor %} -->
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGS RECENTES -->
+      <div class="secao-card">
+        <div class="secao-card-header">
+          <div>
+            <h2 class="secao-card-titulo">Logs Recentes</h2>
+            <p class="secao-card-sub">Últimas ações registradas</p>
+          </div>
+          <a href="/tecnico/logs" class="btn btn-secundario btn-sm">Ver todos</a>
+        </div>
+
+        <div class="tabela-wrap">
+          <div class="tabela">
+            <div class="linha cabecalho" style="grid-template-columns:120px 1fr 1fr 1fr">
+              <span>DATA/HORA</span><span>AÇÃO</span><span>USUÁRIO</span><span>IP</span>
+            </div>
+            <!-- Back-end: {% for log in logs_recentes %} -->
+            <div class="linha" style="grid-template-columns:120px 1fr 1fr 1fr;min-height:52px">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">16/11 14:32</span><!-- {{ log.data_hora | datetime_fmt }} -->
+              <span style="font-size:13px">LOGIN</span><!-- {{ log.acao_realizada }} -->
+              <span style="font-size:13px;color:var(--suave)">Carlos Lima</span><!-- {{ log.usuario.nome if log.usuario else 'Sistema' }} -->
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">192.168.1.10</span><!-- {{ log.ip_origem }} -->
+            </div>
+            <div class="linha" style="grid-template-columns:120px 1fr 1fr 1fr;min-height:52px">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">16/11 14:28</span>
+              <span style="font-size:13px">UPDATE_CAMERA</span>
+              <span style="font-size:13px;color:var(--suave)">Carlos Lima</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--suave)">192.168.1.10</span>
+            </div>
+            <!-- Back-end: {% endfor %} -->
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- PAINEL DE NOTIFICAÇÕES -->
+  <div id="notifPainel" class="notif-painel" role="dialog" aria-label="Notificações">
+    <div class="notif-cabecalho">
+      <h3>Notificações</h3>
+      <button class="btn-sm btn-secundario">Marcar lidas</button>
+    </div>
+    <ul class="notif-lista">
+      <li class="notif-vazio">Nenhuma notificação.</li>
+      <!-- Back-end: {% for n in notificacoes %}...{% endfor %} -->
+    </ul>
+  </div>
+
+</div><!-- .layout -->
+
+<!-- NAV BOTTOM -->
+<nav class="nav-bottom" aria-label="Navegação principal">
+  <a href="/tecnico" class="nav-item ativo" aria-current="page">
+    <svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>
+    <span>Dashboard</span>
+  </a>
+  <a href="/tecnico/cameras" class="nav-item">
+    <svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
+    <span>Câmeras</span>
+  </a>
+  <a href="/tecnico/logs" class="nav-item">
+    <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h8"/></svg>
+    <span>Logs</span>
+  </a>
+</nav>
+
+<div id="pushBanner" class="push-banner" role="banner">
+  <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+  <p>Receba alertas instantâneos de novos incidentes.</p>
+  <div class="push-acoes">
+    <button id="btnPermitirPush" class="btn btn-primario btn-sm">Permitir</button>
+    <button id="btnRecusarPush"  class="btn btn-secundario btn-sm">Agora não</button>
+  </div>
+</div>
+
+</body>
+</html>
