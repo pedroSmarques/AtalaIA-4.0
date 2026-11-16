@@ -11,14 +11,14 @@ USE atalaia;
 -- 1. Criação das Tabelas Independentes (Sem Chaves Estrangeiras)
 -- ==========================================================
 
-CREATE TABLE Setor (
+CREATE TABLE setor (
     id_setor INT AUTO_INCREMENT PRIMARY KEY,
     nome_setor VARCHAR(50) NOT NULL,
     descricao TEXT,
     nivel_risco ENUM('baixo', 'medio', 'alto', 'critico') NOT NULL
 );
 
-CREATE TABLE Usuarios (
+CREATE TABLE usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     cpf VARCHAR(14) UNIQUE NOT NULL,
     nome VARCHAR(100) NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE setor_usuario (
     FOREIGN KEY (fk_Usuarios_id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
 );
 
-CREATE TABLE Camera (
+CREATE TABLE camera (
     id_camera INT AUTO_INCREMENT PRIMARY KEY,
     codigo_identificador VARCHAR(50) NOT NULL,
     url_rtsp_stream VARCHAR(512) NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE Camera (
     FOREIGN KEY (fk_Setor_id_setor) REFERENCES Setor(id_setor)
 );
 
-CREATE TABLE Incidente (
+CREATE TABLE incidente (
     id_incidente INT AUTO_INCREMENT PRIMARY KEY,
     data_hora_deteccao DATETIME NOT NULL,
     caminho_snapshot VARCHAR(255) NOT NULL,
