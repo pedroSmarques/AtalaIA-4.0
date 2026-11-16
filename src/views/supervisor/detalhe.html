@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhe do Incidente · ATALAIA</title>
+  <link rel="stylesheet" href="../assets/base.css">
+  <script src="../assets/base.js" defer></script>
+  <style>
+    .snapshot {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--borda);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--suave);
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+    .snapshot img { width:100%; height:100%; object-fit:cover; }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .meta-item { display:flex; flex-direction:column; gap:4px; }
+    .meta-rotulo {
+      font-family:'JetBrains Mono',monospace;
+      font-size:9px; letter-spacing:1.5px;
+      color:var(--suave); text-transform:uppercase;
+    }
+    .meta-valor { font-size:14px; font-weight:500; }
+    .ia-score {
+      font-family:'JetBrains Mono',monospace;
+      font-size:20px; font-weight:700; color:var(--ciano);
+    }
+    .timeline { display:flex; flex-direction:column; gap:0; }
+    .tl-item { display:flex; gap:16px; }
+    .tl-linha { display:flex; flex-direction:column; align-items:center; }
+    .tl-dot {
+      width:10px; height:10px;
+      border-radius:50%;
+      background:var(--ciano);
+      flex-shrink:0; margin-top:4px;
+    }
+    .tl-dot.pendente { background:var(--laranja); }
+    .tl-dot.resolvido { background:var(--verde); }
+    .tl-tracado { flex:1; width:2px; background:var(--borda); margin-top:4px; }
+    .tl-item:last-child .tl-tracado { display:none; }
+    .tl-corpo { padding-bottom:16px; }
+    .tl-acao { font-size:14px; font-weight:500; margin-bottom:2px; }
+    .tl-info { font-size:12px; color:var(--suave); }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="marca">
+      <div class="marca-icone"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div><h4 class="marca-nome">ATALAIA</h4><p class="marca-sub">SAFETY INTELLIGENCE</p></div>
+    </div>
+    <p class="secao-label">OPERAÇÃO</p>
+    <nav class="menu">
+      <a href="/supervisor" class="menu-item"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>Dashboard</a>
+      <a href="/supervisor/alertas" class="menu-item ativo"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>Alertas</a>
+      <a href="/supervisor/cameras" class="menu-item"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>Câmeras</a>
+      <a href="/supervisor/relatorio-ia" class="menu-item"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>Relatório com IA</a>
+    </nav>
+    <div class="sidebar-rodape">
+      <a href="/sair" class="menu-item"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sair</a>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <header class="topo">
+      <div class="topo-esquerda">
+        <h4 class="planta">PLANTA INDUSTRIAL · UNIDADE SUL</h4>
+        <p id="dataAtual" class="data"></p>
+      </div>
+      <div class="topo-direita">
+        <button id="btnNotif" class="sino" aria-label="Notificações" aria-expanded="false">
+          <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+          <span class="ponto" aria-hidden="true"></span>
+        </button>
+        <div class="usuario">
+          <div class="info"><strong>Rafael Mendes</strong><span class="cargo">SUPERVISOR</span></div>
+          <div class="avatar" aria-hidden="true">RM</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="conteudo">
+
+      <!-- Breadcrumb -->
+      <nav aria-label="Caminho" style="margin-bottom:16px;font-size:13px;color:var(--suave);display:flex;gap:8px;align-items:center">
+        <a href="/supervisor/alertas" style="color:var(--ciano)">Alertas</a>
+        <span>›</span>
+        <span>Incidente #A-2894</span><!-- #A-{{ inc.id_incidente }} -->
+      </nav>
+
+      <div class="pag-header">
+        <div>
+          <p class="pag-rotulo">OCORRÊNCIA DETECTADA</p>
+          <h1 class="pag-titulo">Capacete ausente</h1><!-- {{ inc.tipo_infracao.nome }} -->
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <b class="status pendente">PENDENTE</b><!-- {{ inc.status_atendimento }} -->
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr;gap:20px">
+
+        <!-- Snapshot -->
+        <div>
+          <div class="snapshot">
+            <!-- Back-end: <img src="{{ inc.caminho_snapshot }}" alt="Snapshot do incidente"> -->
+            <div style="text-align:center">
+              <svg viewBox="0 0 24 24" width="48" height="48" style="opacity:.3;margin:0 auto 8px"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
+              <p>Snapshot não disponível na pré-visualização</p>
+              <p style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:4px">{{ inc.caminho_snapshot }}</p>
+            </div>
+          </div>
+
+          <!-- Metadados -->
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-rotulo">ID DO INCIDENTE</span>
+              <span class="meta-valor" style="font-family:'JetBrains Mono',monospace">#A-2894</span><!-- #A-{{ inc.id_incidente }} -->
+            </div>
+            <div class="meta-item">
+              <span class="meta-rotulo">DATA/HORA</span>
+              <span class="meta-valor">16/11/2026 às 14:32</span><!-- {{ inc.data_hora_deteccao | datetime }} -->
+            </div>
+            <div class="meta-item">
+              <span class="meta-rotulo">CÂMERA</span>
+              <span class="meta-valor">C-02 — Produção</span><!-- {{ inc.camera.codigo_identificador }} — {{ inc.camera.setor.nome_setor }} -->
+            </div>
+            <div class="meta-item">
+              <span class="meta-rotulo">TIPO DE INFRAÇÃO</span>
+              <span class="meta-valor">Sem EPI</span><!-- {{ inc.tipo_infracao.nome }} -->
+            </div>
+            <div class="meta-item">
+              <span class="meta-rotulo">GRAVIDADE</span>
+              <span class="meta-valor"><b class="nivel grave">GRAVE</b></span><!-- {{ inc.tipo_infracao.gravidade }} -->
+            </div>
+            <div class="meta-item">
+              <span class="meta-rotulo">CONFIANÇA DA IA</span>
+              <span class="ia-score">94,3%</span><!-- {{ (inc.confianca_ia * 100) | round(1) }}% -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Painel de atendimento -->
+        <div>
+          <div class="secao-card">
+            <div class="secao-card-header" style="margin-bottom:20px">
+              <h2 class="secao-card-titulo">Registrar Atendimento</h2>
+            </div>
+            <!-- Back-end: action="/supervisor/alertas/{{ inc.id_incidente }}/atender" method="POST" -->
+            <form class="form-grid" id="formAtendimento">
+              <div class="campo" style="grid-column:1/-1">
+                <label for="novoStatus">Novo status *</label>
+                <select id="novoStatus" name="status_atendimento" required>
+                  <option value="em atendimento">Em atendimento</option>
+                  <option value="resolvido">Resolvido</option>
+                  <option value="falso positivo">Falso positivo</option>
+                </select>
+              </div>
+              <div class="campo" style="grid-column:1/-1">
+                <label for="observacao">Observação</label>
+                <textarea id="observacao" name="observacao_atendimento" placeholder="Descreva as ações tomadas..."></textarea>
+              </div>
+              <div style="grid-column:1/-1;display:flex;gap:12px;justify-content:flex-end">
+                <a href="/supervisor/alertas" class="btn btn-secundario">Voltar</a>
+                <button type="submit" class="btn btn-primario">Confirmar atendimento</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Histórico / Timeline -->
+          <div class="secao-card">
+            <div class="secao-card-header" style="margin-bottom:16px">
+              <h2 class="secao-card-titulo">Histórico</h2>
+            </div>
+            <!-- Back-end: {% for evento in historico %} -->
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-linha">
+                  <div class="tl-dot pendente"></div>
+                  <div class="tl-tracado"></div>
+                </div>
+                <div class="tl-corpo">
+                  <p class="tl-acao">Incidente detectado pela IA</p>
+                  <p class="tl-info">16/11/2026 às 14:32 — confiança 94,3%</p>
+                </div>
+              </div>
+              <!-- Back-end: {% endfor %} -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <div id="notifPainel" class="notif-painel" role="dialog" aria-label="Notificações">
+    <div class="notif-cabecalho"><h3>Notificações</h3></div>
+    <div class="notif-vazio">Nenhuma notificação.</div>
+  </div>
+
+</div><!-- .layout -->
+
+<nav class="nav-bottom" aria-label="Navegação principal">
+  <a href="/supervisor" class="nav-item"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg><span>Dashboard</span></a>
+  <a href="/supervisor/alertas" class="nav-item ativo" aria-current="page"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg><span>Alertas</span></a>
+  <a href="/supervisor/cameras" class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg><span>Câmeras</span></a>
+  <a href="/supervisor/relatorio-ia" class="nav-item"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg><span>Relatório</span></a>
+</nav>
+
+</body>
+</html>
