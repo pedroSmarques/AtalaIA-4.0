@@ -1,133 +1,61 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Câmeras · ATALAIA</title>
-  <link rel="stylesheet" href="../assets/base.css">
-  <script src="../assets/base.js" defer></script>
-</head>
-<body>
-<div class="layout">
+{% extends 'tecnico/base.html' %}
+{% block titulo %}Câmeras{% endblock %}
+{% block nav_cameras %}ativo{% endblock %}
+{% block nav_mob_cameras %}ativo{% endblock %}
 
-  <aside class="sidebar">
-    <div class="marca">
-      <div class="marca-icone"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
-      <div><h4 class="marca-nome">ATALAIA</h4><p class="marca-sub">SAFETY INTELLIGENCE</p></div>
-    </div>
-    <p class="secao-label">TÉCNICO</p>
-    <nav class="menu">
-      <a href="/tecnico" class="menu-item"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>Dashboard</a>
-      <a href="/tecnico/cameras" class="menu-item ativo"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>Câmeras</a>
-      <a href="/tecnico/logs" class="menu-item"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h8"/></svg>Logs do Sistema</a>
-    </nav>
-    <div class="sidebar-rodape">
-      <a href="/sair" class="menu-item"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sair</a>
-    </div>
-  </aside>
-
-  <div class="principal">
-    <header class="topo">
-      <div class="topo-esquerda">
-        <h4 class="planta">PLANTA INDUSTRIAL · UNIDADE SUL</h4>
-        <p id="dataAtual" class="data"></p>
-      </div>
-      <div class="topo-direita">
-        <button id="btnNotif" class="sino" aria-label="Notificações" aria-expanded="false">
-          <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
-          <span class="ponto" aria-hidden="true"></span>
-        </button>
-        <div class="usuario">
-          <div class="info"><strong>Carlos Lima</strong><span class="cargo">TÉCNICO TI</span></div>
-          <div class="avatar" aria-hidden="true">CL</div>
-        </div>
-      </div>
-    </header>
-
-    <main class="conteudo">
-      <div class="pag-header">
-        <div>
-          <p class="pag-rotulo">INFRAESTRUTURA</p>
-          <h1 class="pag-titulo">Gerenciamento de Câmeras</h1>
-        </div>
-      </div>
-
-      <div class="filtros">
-        <button class="filtro ativo" data-filtro="todos">Todas</button>
-        <button class="filtro" data-filtro="ativa">Ativas</button>
-        <button class="filtro" data-filtro="inativa">Inativas</button>
-        <button class="filtro" data-filtro="manutencao">Manutenção</button>
-      </div>
-
-      <!-- Back-end: {% for cam in cameras %} -->
-      <div class="tabela-wrap">
-        <div class="tabela">
-          <div class="linha cabecalho" style="grid-template-columns:90px 1fr 1.6fr 70px 100px 36px">
-            <span>CÓDIGO</span><span>SETOR</span><span>URL RTSP</span><span>FPS</span><span>STATUS</span><span></span>
-          </div>
-
-          <div class="linha" data-status="ativa" style="grid-template-columns:90px 1fr 1.6fr 70px 100px 36px">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700">C-01</span>
-            <span style="font-size:14px">Produção</span>
-            <span style="font-size:11px;color:var(--suave);font-family:'JetBrains Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="rtsp://192.168.1.100:554/stream1">rtsp://192.168.1.100:554/stream1</span>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;text-align:center">30</span>
-            <span><b class="status ativa">ATIVA</b></span>
-            <button class="seta" data-modal-open="modalEditCam" data-cam-id="1" aria-label="Editar câmera C-01">→</button>
-          </div>
-
-          <div class="linha" data-status="inativa" style="grid-template-columns:90px 1fr 1.6fr 70px 100px 36px">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700">C-07</span>
-            <span style="font-size:14px">Expedição</span>
-            <span style="font-size:11px;color:var(--suave);font-family:'JetBrains Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="rtsp://192.168.1.106:554/stream1">rtsp://192.168.1.106:554/stream1</span>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;text-align:center">30</span>
-            <span><b class="status inativa">INATIVA</b></span>
-            <button class="seta" data-modal-open="modalEditCam" data-cam-id="7" aria-label="Editar câmera C-07">→</button>
-          </div>
-
-          <div class="linha" data-status="manutencao" style="grid-template-columns:90px 1fr 1.6fr 70px 100px 36px">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700">C-11</span>
-            <span style="font-size:14px">Manutenção</span>
-            <span style="font-size:11px;color:var(--suave);font-family:'JetBrains Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="rtsp://192.168.1.110:554/stream1">rtsp://192.168.1.110:554/stream1</span>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;text-align:center">25</span>
-            <span><b class="status manutencao">MANUTENÇÃO</b></span>
-            <button class="seta" data-modal-open="modalEditCam" data-cam-id="11" aria-label="Editar câmera C-11">→</button>
-          </div>
-          <!-- Back-end: {% else %}<div class="estado-vazio"><p>Nenhuma câmera cadastrada.</p></div>{% endfor %} -->
-        </div>
-      </div>
-
-    </main>
+{% block conteudo %}
+<div class="pag-header">
+  <div>
+    <p class="pag-rotulo">INFRAESTRUTURA</p>
+    <h1 class="pag-titulo">Gerenciamento de Câmeras</h1>
   </div>
+</div>
 
-  <div id="notifPainel" class="notif-painel" role="dialog" aria-label="Notificações">
-    <div class="notif-cabecalho"><h3>Notificações</h3></div>
-    <div class="notif-vazio">Nenhuma notificação.</div>
+<div class="secao-card">
+  <div class="secao-card-header">
+    <h2 class="secao-card-titulo">Câmeras</h2>
+    <p class="secao-card-sub">{{ cameras | length }} câmeras cadastradas</p>
   </div>
+  <div class="tabela-wrap">
+    <div class="tabela">
+      <div class="linha cabecalho" style="grid-template-columns:90px 1fr 1.6fr 70px 100px 36px">
+        <span>CÓDIGO</span><span>SETOR</span><span>URL RTSP</span><span>FPS</span><span>STATUS</span><span></span>
+      </div>
+      {% for cam in cameras %}
+      <div class="linha" data-status="{{ cam.status.value }}" style="grid-template-columns:90px 1fr 1.6fr 70px 100px 36px">
+        <span style="font-size:12px;font-weight:700">{{ cam.codigo_identificador }}</span>
+        <span style="font-size:14px">{{ cam.setor.nome_setor }}</span>
+        <span style="font-size:11px;color:var(--suave);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="{{ cam.url_rtsp_stream }}">{{ cam.url_rtsp_stream }}</span>
+        <span style="font-size:12px;text-align:center">{{ cam.fps_operacao }}</span>
+        <span><b class="status {{ cam.status.value | replace(' ','_') }}">{{ cam.status.value | upper }}</b></span>
+        <button class="seta" onclick="abrirModalEditar('{{ cam.id_camera }}','{{ cam.url_rtsp_stream }}','{{ cam.fps_operacao }}','{{ cam.status.value }}')" aria-label="Editar câmera {{ cam.codigo_identificador }}">→</button>
+      </div>
+      {% else %}
+      <div class="estado-vazio"><p>Nenhuma câmera cadastrada.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 
-</div><!-- .layout -->
-
-<!-- MODAL EDITAR CÂMERA -->
-<!-- Técnico pode editar: URL RTSP, FPS e status (não pode criar nem excluir — isso é do gestor) -->
-<div id="modalEditCam" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="tituloEditCam">
-  <div class="modal">
+<dialog id="modalEditCam" class="modal">
+  <div class="modal-conteudo">
     <div class="modal-topo">
-      <h2 class="modal-titulo" id="tituloEditCam">Editar Câmera</h2>
-      <button class="modal-fechar" data-modal-close aria-label="Fechar">
+      <h2 class="modal-titulo">Editar Câmera</h2>
+      <button type="button" onclick="document.getElementById('modalEditCam').close()" class="modal-fechar" aria-label="Fechar">
         <svg viewBox="0 0 24 24" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="modal-corpo">
-      <!-- Back-end: action="/tecnico/cameras/{{ cam.id_camera }}" method="POST" -->
-      <form class="form-grid" id="formEditCam">
+      <form class="form-grid" id="formEditCam" method="post" action="#">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="id_camera" id="editIdCam">
         <div class="campo" style="grid-column:1/-1">
           <label for="editUrlRtsp">URL RTSP</label>
-          <input type="url" id="editUrlRtsp" name="url_rtsp_stream" placeholder="rtsp://...">
-          <!-- Back-end: value="{{ cam.url_rtsp_stream }}" -->
+          <input type="text" id="editUrlRtsp" name="url_rtsp_stream">
         </div>
         <div class="campo">
           <label for="editFps">FPS</label>
-          <input type="number" id="editFps" name="fps_operacao" min="1" max="60" placeholder="30">
-          <!-- Back-end: value="{{ cam.fps_operacao }}" -->
+          <input type="number" id="editFps" name="fps_operacao" min="1" max="60">
         </div>
         <div class="campo">
           <label for="editStatus">Status</label>
@@ -140,17 +68,19 @@
       </form>
     </div>
     <div class="modal-rodape">
-      <button class="btn btn-secundario" data-modal-close>Cancelar</button>
+      <button class="btn btn-secundario" onclick="document.getElementById('modalEditCam').close()">Cancelar</button>
       <button class="btn btn-primario" type="submit" form="formEditCam">Salvar alterações</button>
     </div>
   </div>
-</div>
+</dialog>
 
-<nav class="nav-bottom" aria-label="Navegação principal">
-  <a href="/tecnico" class="nav-item"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg><span>Dashboard</span></a>
-  <a href="/tecnico/cameras" class="nav-item ativo" aria-current="page"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg><span>Câmeras</span></a>
-  <a href="/tecnico/logs" class="nav-item"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h8"/></svg><span>Logs</span></a>
-</nav>
-
-</body>
-</html>
+<script>
+function abrirModalEditar(id, url, fps, status) {
+  document.getElementById('editIdCam').value = id;
+  document.getElementById('editUrlRtsp').value = url;
+  document.getElementById('editFps').value = fps;
+  document.getElementById('editStatus').value = status;
+  document.getElementById('modalEditCam').showModal();
+}
+</script>
+{% endblock %}

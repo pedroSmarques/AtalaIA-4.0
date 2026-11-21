@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <p class="secao-label">TÉCNICO</p>
+    <p class="secao-label">OPERAÇÃO</p>
     <nav class="menu">
       <a href="{{ url_for('tecnico.dashboard') }}" class="menu-item {% block nav_dashboard %}{% endblock %}">
         <svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg>
@@ -41,8 +41,8 @@
         Câmeras
       </a>
       <a href="{{ url_for('tecnico.logs') }}" class="menu-item {% block nav_logs %}{% endblock %}">
-        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h8"/></svg>
-        Logs do Sistema
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+        Logs
       </a>
     </nav>
 
@@ -105,7 +105,7 @@
     <span>Câmeras</span>
   </a>
   <a href="{{ url_for('tecnico.logs') }}" class="nav-item {% block nav_mob_logs %}{% endblock %}">
-    <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h8"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
     <span>Logs</span>
   </a>
 </nav>

@@ -12,7 +12,7 @@ def criar_app(config_class=Config):
 
     app = Flask(
         __name__,
-        template_folder=os.path.join(raiz, "templates"),
+        template_folder=os.path.join(raiz, "src", "views"),
         static_folder=os.path.join(raiz, "static"),
     )
     app.config.from_object(config_class)
