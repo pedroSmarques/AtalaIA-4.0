@@ -10,6 +10,7 @@ __pycache__/
 # Variáveis de ambiente / segredos
 .env
 .env.*
+!.env.example
 
 # Datasets e gravações de câmera
 datasets/

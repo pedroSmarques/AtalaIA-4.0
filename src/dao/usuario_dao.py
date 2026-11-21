@@ -21,6 +21,9 @@ class UsuarioDAO:
     def buscar_por_cpf(self, cpf: str) -> Usuario | None:
         return self.db.query(Usuario).filter(Usuario.cpf == cpf).first()
 
+    def buscar_por_email(self, email: str) -> Usuario | None:
+        return self.db.query(Usuario).filter(Usuario.email == email).first()
+
     def listar_todos(self) -> list[Usuario]:
         return self.db.query(Usuario).all()
 

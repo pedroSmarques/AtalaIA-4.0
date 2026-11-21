@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, date
 from src.models import Incidente, StatusAtendimentoEnum
 
 class IncidenteDAO:
@@ -25,6 +25,28 @@ class IncidenteDAO:
 
     def listar_pendentes(self) -> list[Incidente]:
         return self.db.query(Incidente).filter(Incidente.status_atendimento == StatusAtendimentoEnum.pendente).all()
+
+    def listar_todos(self) -> list[Incidente]:
+        return self.db.query(Incidente).order_by(Incidente.data_hora_deteccao.desc()).all()
+
+    def listar_por_status(self, status: StatusAtendimentoEnum) -> list[Incidente]:
+        return self.db.query(Incidente).filter(Incidente.status_atendimento == status).all()
+
+    def listar_recentes(self, limite: int = 5) -> list[Incidente]:
+        return self.db.query(Incidente).order_by(Incidente.data_hora_deteccao.desc()).limit(limite).all()
+
+    def contar_hoje(self) -> int:
+        hoje = date.today()
+        return self.db.query(Incidente).filter(
+            Incidente.data_hora_deteccao >= datetime(hoje.year, hoje.month, hoje.day)
+        ).count()
+
+    def contar_resolvidos_hoje(self) -> int:
+        hoje = date.today()
+        return self.db.query(Incidente).filter(
+            Incidente.status_atendimento == StatusAtendimentoEnum.resolvido,
+            Incidente.data_hora_resolucao >= datetime(hoje.year, hoje.month, hoje.day),
+        ).count()
 
     def atualizar_atendimento(self, id_incidente: int, status: StatusAtendimentoEnum, id_usuario: int, observacao: str = None) -> Incidente | None:
         incidente = self.buscar_por_id(id_incidente)

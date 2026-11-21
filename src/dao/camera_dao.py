@@ -21,6 +21,9 @@ class CameraDAO:
     def buscar_por_id(self, id_camera: int) -> Camera | None:
         return self.db.query(Camera).filter(Camera.id_camera == id_camera).first()
 
+    def listar_todas(self) -> list[Camera]:
+        return self.db.query(Camera).all()
+
     def listar_por_setor(self, id_setor: int) -> list[Camera]:
         return self.db.query(Camera).filter(Camera.fk_Setor_id_setor == id_setor).all()
 
