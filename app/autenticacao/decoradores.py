@@ -4,7 +4,8 @@ from flask_jwt_extended import (
     verify_jwt_in_request, get_jwt, get_jwt_identity,
     create_access_token, set_access_cookies,
 )
-from flask_jwt_extended.exceptions import ExpiredSignatureError, NoAuthorizationError
+from flask_jwt_extended.exceptions import NoAuthorizationError
+from jwt.exceptions import ExpiredSignatureError
 
 
 def perfil_requerido(*perfis):
