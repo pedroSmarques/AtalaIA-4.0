@@ -1,0 +1,67 @@
+{% extends 'gestor/base.html' %}
+{% block titulo %}Setores{% endblock %}
+{% block nav_setores %}ativo{% endblock %}
+
+{% block conteudo %}
+<div class="pag-header">
+  <div>
+    <p class="pag-rotulo">INFRAESTRUTURA</p>
+    <h1 class="pag-titulo">Setores da Planta</h1>
+  </div>
+  <button class="btn btn-primario" data-modal-open="modalSetor">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    Novo Setor
+  </button>
+</div>
+
+<div class="secao-card">
+  <div class="secao-card-header">
+    <h2 class="secao-card-titulo">Setores</h2>
+    <p class="secao-card-sub">{{ setores | length }} setores cadastrados</p>
+  </div>
+  <div class="tabela-wrap">
+    <div class="tabela">
+      <div class="linha cabecalho" style="grid-template-columns:1.5fr 2fr 120px 36px">
+        <span>SETOR</span><span>DESCRIÇÃO</span><span>RISCO</span><span></span>
+      </div>
+      {% for s in setores %}
+      <div class="linha" style="grid-template-columns:1.5fr 2fr 120px 36px">
+        <span style="font-weight:600;color:#fff;font-size:14px">{{ s.nome_setor }}</span>
+        <span style="font-size:13px;color:var(--suave)">{{ s.descricao or '—' }}</span>
+        <span><b class="status {{ s.nivel_risco.value }}">{{ s.nivel_risco.value | upper }}</b></span>
+        <button class="seta" title="Editar">✎</button>
+      </div>
+      {% else %}
+      <div class="estado-vazio"><p>Nenhum setor cadastrado.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div id="modalSetor" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-cabecalho">
+      <h3>Novo Setor</h3>
+      <button class="modal-fechar" data-modal-close aria-label="Fechar">&times;</button>
+    </div>
+    <form method="post" action="#">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="campo"><label>Nome do setor</label><input type="text" name="nome_setor" required></div>
+      <div class="campo"><label>Descrição</label><textarea name="descricao" rows="3"></textarea></div>
+      <div class="campo">
+        <label>Nível de risco</label>
+        <select name="nivel_risco">
+          <option value="baixo">Baixo</option>
+          <option value="medio">Médio</option>
+          <option value="alto">Alto</option>
+          <option value="critico">Crítico</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+        <button type="button" class="btn btn-secundario" data-modal-close>Cancelar</button>
+        <button type="submit" class="btn btn-primario">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'supervisor/base.html' %}
+{% block titulo %}Dashboard{% endblock %}
+{% block nav_dashboard %}ativo{% endblock %}
+{% block nav_mob_dashboard %}ativo{% endblock %}
+
+{% block conteudo %}
+<div class="pag-header">
+  <div>
+    <p class="pag-rotulo">MONITORAMENTO EM TEMPO REAL</p>
+    <h1 class="pag-titulo">Dashboard</h1>
+  </div>
+  <a href="{{ url_for('supervisor.alertas') }}" class="btn btn-primario">
+    <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
+    Ver Alertas
+  </a>
+</div>
+
+<div class="cards-grid">
+  <div class="card-indicador">
+    <div class="card-icone ciano">
+      <svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
+    </div>
+    <div class="card-corpo">
+      <p class="card-rotulo">CÂMERAS ONLINE</p>
+      <p class="card-valor">{{ cameras_ativas }}</p>
+      <p class="card-desc">de {{ cameras_total }} no total</p>
+    </div>
+  </div>
+  <div class="card-indicador">
+    <div class="card-icone laranja">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="card-corpo">
+      <p class="card-rotulo">PENDENTES</p>
+      <p class="card-valor">{{ incidentes_pendentes_count }}</p>
+      <p class="card-desc">aguardando atendimento</p>
+    </div>
+  </div>
+  <div class="card-indicador">
+    <div class="card-icone amarelo">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="card-corpo">
+      <p class="card-rotulo">EM ATENDIMENTO</p>
+      <p class="card-valor">{{ incidentes_em_atendimento }}</p>
+      <p class="card-desc">em andamento</p>
+    </div>
+  </div>
+  <div class="card-indicador">
+    <div class="card-icone verde">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="card-corpo">
+      <p class="card-rotulo">RESOLVIDOS HOJE</p>
+      <p class="card-valor">{{ incidentes_resolvidos_hoje }}</p>
+      <p class="card-desc">encerrados com sucesso</p>
+    </div>
+  </div>
+</div>
+
+<div class="secao-card">
+  <div class="secao-card-header">
+    <div>
+      <h2 class="secao-card-titulo">Alertas Pendentes</h2>
+      <p class="secao-card-sub">Requerem atendimento imediato</p>
+    </div>
+    <a href="{{ url_for('supervisor.alertas') }}" class="btn btn-secundario btn-sm">Ver todos</a>
+  </div>
+
+  <div class="tabela-wrap">
+    <div class="tabela">
+      <div class="linha cabecalho" style="grid-template-columns:90px 1.4fr 1fr 1fr 36px">
+        <span>REGISTRO</span><span>OCORRÊNCIA</span><span>CÂMERA</span><span>STATUS</span><span></span>
+      </div>
+      {% for inc in incidentes_pendentes %}
+      <div class="linha" data-status="pendente" style="grid-template-columns:90px 1.4fr 1fr 1fr 36px">
+        <div>
+          <p style="font-weight:600;font-size:13px">#A-{{ inc.id_incidente }}</p>
+          <p class="reg-id">{{ inc.data_hora_deteccao.strftime('%H:%M') }}</p>
+        </div>
+        <span style="font-size:14px;color:#fff">{{ inc.tipo_infracao.nome }}</span>
+        <span style="font-size:13px;color:var(--suave)">{{ inc.camera.setor.nome_setor }} <small>{{ inc.camera.codigo_identificador }}</small></span>
+        <span><b class="status pendente">PENDENTE</b></span>
+        <a href="{{ url_for('supervisor.detalhe', id_incidente=inc.id_incidente) }}" class="seta" aria-label="Atender incidente">→</a>
+      </div>
+      {% else %}
+      <div class="estado-vazio"><p>Nenhum alerta pendente no momento.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

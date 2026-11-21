@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página não encontrada · ATALAIA</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <style>
+    body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#0e1426;margin:0}
+    .erro-caixa{text-align:center;padding:48px;background:#1a2338;border:1px solid #232d45;border-radius:16px;max-width:440px}
+    .erro-codigo{font-size:72px;font-weight:700;color:#9aa6bd;margin:0;line-height:1}
+    .erro-titulo{color:#e8edf5;font-size:20px;margin:16px 0 8px}
+    .erro-desc{color:#9aa6bd;font-size:14px;margin:0 0 24px}
+    .btn{display:inline-block;padding:10px 20px;background:#3bb4d6;color:#0e1426;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="erro-caixa">
+    <p class="erro-codigo">404</p>
+    <h1 class="erro-titulo">Página não encontrada</h1>
+    <p class="erro-desc">A pagina que voce buscou nao existe ou foi removida.</p>
+    <a href="javascript:history.back()" class="btn">Voltar</a>
+  </div>
+</body>
+</html>

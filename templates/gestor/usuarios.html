@@ -1,0 +1,75 @@
+{% extends 'gestor/base.html' %}
+{% block titulo %}Usuários{% endblock %}
+{% block nav_usuarios %}ativo{% endblock %}
+{% block nav_mob_usuarios %}ativo{% endblock %}
+
+{% block conteudo %}
+<div class="pag-header">
+  <div>
+    <p class="pag-rotulo">GESTÃO DE PESSOAL</p>
+    <h1 class="pag-titulo">Usuários do Sistema</h1>
+  </div>
+  <button class="btn btn-primario" data-modal-open="modalUsuario">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    Novo Usuário
+  </button>
+</div>
+
+<div class="secao-card">
+  <div class="secao-card-header">
+    <div>
+      <h2 class="secao-card-titulo">Equipe</h2>
+      <p class="secao-card-sub">{{ usuarios | length }} usuários cadastrados</p>
+    </div>
+  </div>
+  <div class="tabela-wrap">
+    <div class="tabela">
+      <div class="linha cabecalho" style="grid-template-columns:1fr 1.5fr 100px 100px 80px">
+        <span>NOME</span><span>E-MAIL</span><span>CARGO</span><span>STATUS</span><span>AÇÕES</span>
+      </div>
+      {% for u in usuarios %}
+      <div class="linha" style="grid-template-columns:1fr 1.5fr 100px 100px 80px">
+        <span style="font-weight:600;color:#fff;font-size:14px">{{ u.nome }}</span>
+        <span style="font-size:13px;color:var(--suave)">{{ u.email }}</span>
+        <span style="font-size:13px;color:var(--ciano)">{{ u.cargo.value }}</span>
+        <span><b class="status {{ u.status_conta.value }}">{{ u.status_conta.value | upper }}</b></span>
+        <span style="display:flex;gap:8px">
+          <button class="seta" title="Editar">✎</button>
+          <button class="seta" title="Bloquear" style="color:var(--vermelho)">⊘</button>
+        </span>
+      </div>
+      {% else %}
+      <div class="estado-vazio"><p>Nenhum usuário cadastrado.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div id="modalUsuario" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-cabecalho">
+      <h3>Novo Usuário</h3>
+      <button class="modal-fechar" data-modal-close aria-label="Fechar">&times;</button>
+    </div>
+    <form method="post" action="#">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="campo"><label>Nome completo</label><input type="text" name="nome" required></div>
+      <div class="campo"><label>E-mail</label><input type="email" name="email" required></div>
+      <div class="campo"><label>CPF</label><input type="text" name="cpf" required></div>
+      <div class="campo">
+        <label>Cargo</label>
+        <select name="cargo">
+          <option value="Gestor">Gestor</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="Tecnico">Técnico</option>
+        </select>
+      </div>
+      <div class="campo"><label>Senha provisória</label><input type="password" name="senha" minlength="8" required></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+        <button type="button" class="btn btn-secundario" data-modal-close>Cancelar</button>
+        <button type="submit" class="btn btn-primario">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

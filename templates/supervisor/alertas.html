@@ -1,0 +1,43 @@
+{% extends 'supervisor/base.html' %}
+{% block titulo %}Alertas{% endblock %}
+{% block nav_alertas %}ativo{% endblock %}
+{% block nav_mob_alertas %}ativo{% endblock %}
+
+{% block conteudo %}
+<div class="pag-header">
+  <div>
+    <p class="pag-rotulo">MONITORAMENTO</p>
+    <h1 class="pag-titulo">Central de Alertas</h1>
+  </div>
+</div>
+
+<div class="secao-card">
+  <div class="secao-card-header">
+    <div>
+      <h2 class="secao-card-titulo">Incidentes</h2>
+      <p class="secao-card-sub">{{ incidentes | length }} registros encontrados</p>
+    </div>
+  </div>
+  <div class="tabela-wrap">
+    <div class="tabela">
+      <div class="linha cabecalho" style="grid-template-columns:90px 1.4fr 1fr 1fr 36px">
+        <span>REGISTRO</span><span>OCORRÊNCIA</span><span>CÂMERA</span><span>STATUS</span><span></span>
+      </div>
+      {% for inc in incidentes %}
+      <div class="linha" data-status="{{ inc.status_atendimento.value }}" style="grid-template-columns:90px 1.4fr 1fr 1fr 36px">
+        <div>
+          <p style="font-weight:600;font-size:13px">#A-{{ inc.id_incidente }}</p>
+          <p class="reg-id">{{ inc.data_hora_deteccao.strftime('%d/%m %H:%M') }}</p>
+        </div>
+        <span style="font-size:14px;color:#fff">{{ inc.tipo_infracao.nome }}</span>
+        <span style="font-size:13px;color:var(--suave)">{{ inc.camera.setor.nome_setor }} <small>{{ inc.camera.codigo_identificador }}</small></span>
+        <span><b class="status {{ inc.status_atendimento.value | replace(' ','_') }}">{{ inc.status_atendimento.value | upper }}</b></span>
+        <a href="{{ url_for('supervisor.detalhe', id_incidente=inc.id_incidente) }}" class="seta" aria-label="Atender incidente">→</a>
+      </div>
+      {% else %}
+      <div class="estado-vazio"><p>Nenhum incidente registrado.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

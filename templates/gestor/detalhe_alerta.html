@@ -1,0 +1,44 @@
+{% extends 'gestor/base.html' %}
+{% block titulo %}Incidente #A-{{ incidente.id_incidente }}{% endblock %}
+{% block nav_alertas %}ativo{% endblock %}
+
+{% block conteudo %}
+<div class="pag-header">
+  <div>
+    <p class="pag-rotulo">MONITORAMENTO</p>
+    <h1 class="pag-titulo">Incidente #A-{{ incidente.id_incidente }}</h1>
+  </div>
+  <a href="{{ url_for('gestor.alertas') }}" class="btn btn-secundario">← Voltar</a>
+</div>
+
+<div class="secao-card">
+  <div class="secao-card-header">
+    <h2 class="secao-card-titulo">Detalhes do Incidente</h2>
+    <span><b class="status {{ incidente.status_atendimento.value | replace(' ','_') }}">{{ incidente.status_atendimento.value | upper }}</b></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 0">
+    <div>
+      <p class="card-rotulo">OCORRÊNCIA</p>
+      <p style="color:#fff;font-size:15px">{{ incidente.tipo_infracao.nome }}</p>
+    </div>
+    <div>
+      <p class="card-rotulo">CÂMERA</p>
+      <p style="color:#fff;font-size:15px">{{ incidente.camera.codigo_identificador }} — {{ incidente.camera.setor.nome_setor }}</p>
+    </div>
+    <div>
+      <p class="card-rotulo">DATA / HORA</p>
+      <p style="color:#fff;font-size:15px">{{ incidente.data_hora_deteccao.strftime('%d/%m/%Y às %H:%M') }}</p>
+    </div>
+    <div>
+      <p class="card-rotulo">CONFIANÇA DA IA</p>
+      <p style="color:#fff;font-size:15px">{{ "%.0f"|format(incidente.confianca_ia * 100) }}%</p>
+    </div>
+    {% if incidente.observacao_atendimento %}
+    <div style="grid-column:1/-1">
+      <p class="card-rotulo">OBSERVAÇÃO</p>
+      <p style="color:#fff;font-size:14px">{{ incidente.observacao_atendimento }}</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

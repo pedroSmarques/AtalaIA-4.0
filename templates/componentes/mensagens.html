@@ -1,0 +1,18 @@
+{% with mensagens = get_flashed_messages(with_categories=true) %}
+{% if mensagens %}
+<div class="flash-container" id="flashContainer">
+  {% for categoria, mensagem in mensagens %}
+  <div class="flash flash-{{ categoria }}" role="alert">
+    <span>{{ mensagem }}</span>
+    <button type="button" class="flash-fechar" aria-label="Fechar" onclick="this.parentElement.remove()">&times;</button>
+  </div>
+  {% endfor %}
+</div>
+<script>
+  // Remove automaticamente apos 5 segundos
+  setTimeout(() => {
+    document.getElementById('flashContainer')?.remove();
+  }, 5000);
+</script>
+{% endif %}
+{% endwith %}
