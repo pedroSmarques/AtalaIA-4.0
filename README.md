@@ -64,72 +64,68 @@ Atalaia 4.0/
 
 ### 1. Pré-requisitos
 
-- Python 3.11 ou superior instalado
-- MySQL rodando localmente (porta 3306) com um banco chamado `atalaia`
+- Python 3.11 ou superior (marque **"Add Python to PATH"** na instalação)
+- MySQL rodando (se usar XAMPP: abra o painel e clique em **Start** ao lado de MySQL)
+- Banco de dados chamado `atalaia` criado no MySQL (via phpMyAdmin ou linha de comando)
 
-### 2. Criar o ambiente virtual
+### 2. Dois cliques e pronto
 
-Abra um terminal na pasta do projeto e execute:
+Dê dois cliques em **`iniciar.bat`**.
 
-```cmd
-python -m venv .venv
-.venv\Scripts\activate
-```
+O script vai:
+- criar o ambiente virtual automaticamente,
+- instalar as dependências,
+- gerar o `.env` com chave secreta (só na primeira vez),
+- criar as tabelas e os usuários de teste,
+- abrir o navegador em **http://localhost:5000**.
 
-### 3. Instalar as dependências
-
-```cmd
-pip install -r requirements.txt
-```
-
-### 4. Configurar as variáveis de ambiente
-
-```cmd
-copy .env.example .env
-```
-
-Abra o arquivo `.env` e ajuste:
+Ao final aparece um quadro com os acessos de demonstração, por exemplo:
 
 ```
-JWT_SECRET_KEY=uma-chave-longa-e-aleatoria
-DATABASE_URL=mysql+pymysql://root:SUA_SENHA@localhost:3306/atalaia
+==============================================================
+   ACESSOS DE DEMONSTRACAO — ATALAIA 4.0
+==============================================================
+   Perfil       E-mail                         Senha
+   ---------------------------------------------------------
+   Gestor       gestor@atalaia.com             Gestor@2024
+   Supervisor   supervisor@atalaia.com         Superv@2024
+
+   Tecnico      tecnico@atalaia.com            Tecnico@2024
+==============================================================
 ```
 
-### 5. Criar as tabelas e os usuários de teste
+> Para alterar e-mails ou senhas dos usuários de teste, edite as variáveis
+> `USUARIO_TESTE_*` no arquivo `.env` e execute **`resetar-usuarios.bat`**.
 
-Certifique-se de que o banco `atalaia` existe no MySQL, depois rode:
-
-```cmd
-python criar_usuarios_teste.py
-```
-
-Esse script cria as tabelas automaticamente e solicita as senhas dos usuários de teste.
-
-### 6. Usuários criados
-
-| Cargo | E-mail |
-|---|---|
-| Gestor | gestor@atalaia.com |
-| Supervisor | supervisor@atalaia.com |
-| Técnico | tecnico@atalaia.com |
-
-A senha é pedida no terminal (ou gerada e exibida uma única vez).
-
-### 7. Iniciar o servidor
-
-```cmd
-python run.py
-```
-
-Acesse: **http://localhost:5000**
-
-### 8. Rodar os testes
+### 3. Rodar os testes
 
 ```cmd
 pytest tests/ -v
 ```
 
-Os testes usam SQLite em memória — não é necessário o MySQL para testá-los.
+Os testes usam SQLite em memória — não é necessário o MySQL para rodá-los.
+
+---
+
+## Execução manual (avançado)
+
+Se preferir executar passo a passo sem usar o `iniciar.bat`:
+
+```cmd
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+```
+
+Edite o `.env` e ajuste `JWT_SECRET_KEY` e `DATABASE_URL`, depois:
+
+```cmd
+python criar_usuarios_teste.py
+python run.py
+```
+
+Acesse: **http://localhost:5000**
 
 ---
 
