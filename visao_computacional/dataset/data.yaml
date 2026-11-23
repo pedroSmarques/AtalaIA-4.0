@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['CAPACETE', 'OCULOS']
+
+roboflow:
+  workspace: pedro-treino
+  project: machine-area-ppe-safety-0hklm
+  version: 1
+  license: Private
+  url: https://app.roboflow.com/pedro-treino/machine-area-ppe-safety-0hklm/1
