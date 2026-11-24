@@ -66,7 +66,7 @@ def test_cria_usuario_rejeita_dados_invalidos(app, usuarios_teste, campo, valor)
     dados = {**NOVO_USUARIO, "email": f"x_{campo}@teste.com", "cpf": "321.654.987-00", campo: valor}
     r = c.post("/gestor/usuarios", data=dados, follow_redirects=True)
     assert _um(Usuario, email=dados["email"]) is None
-    assert 'class="flash flash-erro"' in r.get_data(as_text=True)
+    assert 'class="toast toast-erro"' in r.get_data(as_text=True)
 
 
 def test_nao_cria_usuario_com_email_ou_cpf_repetido(app, usuarios_teste):

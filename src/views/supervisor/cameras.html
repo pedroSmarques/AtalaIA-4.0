@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'componentes/camera_card.html' import camera_card %}
 {% block titulo %}Câmeras{% endblock %}
 
 {% block conteudo %}
@@ -8,6 +9,12 @@
     <h1 class="pag-titulo">Câmeras (Leitura)</h1>
   </div>
 </div>
+
+{% if cameras %}
+<div class="cam-grade">
+  {% for cam in cameras %}{{ camera_card(cam) }}{% endfor %}
+</div>
+{% endif %}
 
 <div class="secao-card">
   <div class="secao-card-header">

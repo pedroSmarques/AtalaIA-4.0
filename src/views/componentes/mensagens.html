@@ -1,18 +1,24 @@
+{#
+  Avisos do servidor (flash) desenhados como toasts.
+  Categorias: sucesso, erro, aviso. O temporizador, a pausa e o botão fechar ficam em static/js/toast.js.
+#}
+{% set icones_toast = {
+  'sucesso': '<path d="M5 12.5l4.2 4.2L19 7"/>',
+  'erro':    '<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.4v.1"/>',
+  'aviso':   '<path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.4v.1"/>'
+} %}
 {% with mensagens = get_flashed_messages(with_categories=true) %}
 {% if mensagens %}
-<div class="flash-container" id="flashContainer">
+<div class="toasts" id="toasts">
   {% for categoria, mensagem in mensagens %}
-  <div class="flash flash-{{ categoria }}" role="alert">
-    <span>{{ mensagem }}</span>
-    <button type="button" class="flash-fechar" aria-label="Fechar" onclick="this.parentElement.remove()">&times;</button>
+  {% set tipo = categoria if categoria in icones_toast else 'aviso' %}
+  <div class="toast toast-{{ tipo }}" role="{{ 'alert' if tipo == 'erro' else 'status' }}" data-duracao="{{ 8000 if tipo == 'erro' else 5000 }}">
+    <span class="toast-icone"><svg viewBox="0 0 24 24" aria-hidden="true">{{ icones_toast[tipo] | safe }}</svg></span>
+    <p class="toast-texto">{{ mensagem }}</p>
+    <button type="button" class="toast-fechar" aria-label="Fechar aviso"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <span class="toast-barra" aria-hidden="true"></span>
   </div>
   {% endfor %}
 </div>
-<script>
-  // Remove automaticamente apos 5 segundos
-  setTimeout(() => {
-    document.getElementById('flashContainer')?.remove();
-  }, 5000);
-</script>
 {% endif %}
 {% endwith %}

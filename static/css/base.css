@@ -1226,9 +1226,10 @@ html.modal-aberto { overflow: hidden; }
 .perfil-foto-acoes .campo { gap: 8px; align-items: flex-start; }
 .perfil-foto-botao { cursor: pointer; }
 /* o input real fica escondido da vista, mas continua acessível pelo teclado */
-.perfil-foto-input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; clip-path: inset(50%); }
-.perfil-foto-input:focus-visible + .campo-dica { outline: 2px solid var(--ciano); outline-offset: 2px; }
-.campo input.perfil-foto-input { min-height: 0; padding: 0; border: 0; }
+.perfil-foto-acoes .campo { position: relative; }
+.campo input.perfil-foto-input { position: absolute; left: 0; top: 0; width: 1px; height: 1px; min-height: 0; padding: 0; border: 0; opacity: 0; overflow: hidden; clip-path: inset(50%); }
+.perfil-foto-input:focus-visible ~ .perfil-foto-botao,
+.campo:has(.perfil-foto-input:focus-visible) .perfil-foto-botao { outline: 2px solid var(--ciano); outline-offset: 2px; }
 .perfil-remover { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; color: var(--suave); cursor: pointer; }
 .perfil-remover input { width: 18px; height: 18px; accent-color: var(--ciano); }
 .perfil-campos { margin-bottom: 4px; }
@@ -1269,3 +1270,5 @@ html.modal-aberto { overflow: hidden; }
 .form-inline { display: inline-flex; }
 .item-card-acoes .form-inline { flex: 1; }
 .item-card-acoes .form-inline .btn { flex: 1; }
+
+.msg-erro[hidden] { display: none; }

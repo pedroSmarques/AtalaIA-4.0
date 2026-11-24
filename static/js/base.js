@@ -11,31 +11,6 @@ function atualizarData() {
   el.textContent = texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
-// Aviso rápido (toast). tipo: 'sucesso' | 'erro' | 'aviso'
-function mostrarToast(tipo, mensagem) {
-  let caixa = document.getElementById('flashContainer');
-  if (!caixa) {
-    caixa = document.createElement('div');
-    caixa.id = 'flashContainer';
-    caixa.className = 'flash-container';
-    document.body.appendChild(caixa);
-  }
-  const item = document.createElement('div');
-  item.className = `flash flash-${tipo}`;
-  item.setAttribute('role', tipo === 'erro' ? 'alert' : 'status');
-  const texto = document.createElement('span');
-  texto.textContent = mensagem;
-  const fechar = document.createElement('button');
-  fechar.type = 'button';
-  fechar.className = 'flash-fechar';
-  fechar.setAttribute('aria-label', 'Fechar');
-  fechar.textContent = '×';
-  fechar.addEventListener('click', () => item.remove());
-  item.append(texto, fechar);
-  caixa.appendChild(item);
-  setTimeout(() => item.remove(), 5000);
-}
-
 // Toggle do painel de notificações
 function initNotificacoes() {
   const btn    = document.getElementById('btnNotif');
@@ -360,13 +335,101 @@ function initNavegacao() {
 // Avatares: se a foto não carregar, some e ficam as iniciais.
 // ---------------------------------------------------------------
 function initAvatares() {
-  // o evento "error" de <img> não borbulha: captura na fase de captura
+  const terminou = img => img.closest('.av')?.classList.remove('skeleton');
+  // "error" e "load" de <img> não borbulham: ouvimos na fase de captura
   document.addEventListener('error', e => {
-    if (e.target.matches?.('img.av-img')) e.target.remove();
+    if (e.target.matches?.('img.av-img')) { terminou(e.target); e.target.remove(); }
+  }, true);
+  document.addEventListener('load', e => {
+    if (e.target.matches?.('img.av-img')) terminou(e.target);
   }, true);
   document.querySelectorAll('img.av-img').forEach(img => {
-    if (img.complete && img.naturalWidth === 0) img.remove();
+    if (!img.complete) return;
+    if (img.naturalWidth === 0) img.remove();
+    terminou(img);
   });
+}
+
+// ---------------------------------------------------------------
+// Detalhes de interface: números que contam, ondulação nos botões e dicas (tooltip).
+// Tudo respeita prefers-reduced-motion; o conteúdo final já está no HTML.
+// ---------------------------------------------------------------
+const reduzMovimento = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// .card-valor com número inteiro (ex.: "12" ou "94%") conta de 0 até o valor ao carregar
+function initContadores() {
+  if (reduzMovimento()) return;
+  document.querySelectorAll('.card-valor').forEach(el => {
+    const m = /^(\d+)(\D*)$/.exec(el.textContent.trim());
+    if (!m || Number(m[1]) === 0) return;
+    const alvo = Number(m[1]), sufixo = m[2];
+    const duracao = Math.min(900, 400 + alvo * 12);
+    const inicio = performance.now();
+    el.setAttribute('aria-label', `${alvo}${sufixo}`);   // leitores de tela leem só o valor final
+    const passo = agora => {
+      const t = Math.min(1, (agora - inicio) / duracao);
+      const suave = 1 - Math.pow(1 - t, 3);               // desacelera no final
+      el.textContent = Math.round(alvo * suave) + sufixo;
+      if (t < 1) requestAnimationFrame(passo);
+    };
+    requestAnimationFrame(passo);
+  });
+}
+
+// ondulação no ponto do toque/clique dos botões
+function initOndulacao() {
+  document.addEventListener('pointerdown', e => {
+    const btn = e.target.closest?.('.btn');
+    if (!btn || btn.disabled || btn.classList.contains('carregando') || reduzMovimento()) return;
+    const r = btn.getBoundingClientRect();
+    const d = Math.max(r.width, r.height) * 2;
+    const onda = document.createElement('span');
+    onda.className = 'ripple';
+    onda.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`;
+    btn.appendChild(onda);
+    onda.addEventListener('animationend', () => onda.remove());
+    setTimeout(() => onda.remove(), 800);
+  });
+}
+
+// dicas: um único balão flutuante (não é cortado por tabelas com rolagem).
+// Usa o title/aria-label de botões só com ícone; no toque aparece ao focar.
+function initTooltips() {
+  document.querySelectorAll('.seta, .btn-icone').forEach(el => {
+    const texto = el.getAttribute('title') || el.getAttribute('aria-label');
+    if (!texto) return;
+    el.dataset.tooltip = texto;
+    el.removeAttribute('title');            // evita a dica nativa duplicada
+  });
+  const balao = document.createElement('div');
+  balao.className = 'tooltip';
+  balao.setAttribute('role', 'tooltip');
+  document.body.appendChild(balao);
+
+  const esconder = () => balao.classList.remove('visivel');
+  const mostrar = el => {
+    balao.textContent = el.dataset.tooltip;
+    const r = el.getBoundingClientRect();
+    balao.style.left = '0px'; balao.style.top = '0px';
+    const b = balao.getBoundingClientRect();
+    let x = r.left + r.width / 2 - b.width / 2;
+    x = Math.max(8, Math.min(x, window.innerWidth - b.width - 8));
+    let y = r.bottom + 8;
+    if (y + b.height > window.innerHeight - 8) y = r.top - b.height - 8;   // sem espaço embaixo: sobe
+    balao.style.left = `${x}px`;
+    balao.style.top = `${y}px`;
+    balao.classList.add('visivel');
+  };
+  const alvo = e => e.target.closest?.('[data-tooltip]');
+  const comMouse = window.matchMedia('(hover: hover)').matches;
+  if (comMouse) {
+    document.addEventListener('mouseover', e => { const el = alvo(e); if (el) mostrar(el); });
+    document.addEventListener('mouseout', e => { if (alvo(e)) esconder(); });
+  }
+  document.addEventListener('focusin', e => { const el = alvo(e); if (el && e.target.matches(':focus-visible')) mostrar(el); });
+  document.addEventListener('focusout', esconder);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') esconder(); });
+  window.addEventListener('scroll', esconder, { passive: true, capture: true });
 }
 
 // ---------------------------------------------------------------
@@ -462,6 +525,7 @@ function initRelatorios() {
       status.appendChild(girar);
     }
     status.appendChild(document.createTextNode(texto));
+    status.scrollIntoView({ block: 'nearest', behavior: reduzMovimento() ? 'auto' : 'smooth' });
   }
 
   function validar(comEmail) {
@@ -578,6 +642,9 @@ function initEdicao() {
 }
 
 atualizarData();
+initContadores();
+initOndulacao();
+initTooltips();
 initEdicao();
 initRelatorios();
 initAvatares();

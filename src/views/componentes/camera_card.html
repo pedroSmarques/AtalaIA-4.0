@@ -1,0 +1,27 @@
+{#
+  Cartão de câmera (visão geral). O quadro é um marcador visual: o vídeo ao vivo ainda não é exibido.
+  A linha de varredura e o ponto pulsante só aparecem em câmeras ativas; o estado também vem em texto.
+  Uso: {% from 'componentes/camera_card.html' import camera_card %}{{ camera_card(cam) }}
+#}
+{% macro camera_card(cam) %}
+{% set estado = cam.status.value %}
+<article class="cam-card" aria-label="Câmera {{ cam.codigo_identificador }}, {{ estado }}">
+  <div class="cam-feed">
+    {% if estado == 'ativa' %}
+    <span class="ao-vivo"><span class="ao-vivo-ponto" aria-hidden="true"></span>Monitorando</span>
+    <span class="cam-varredura" aria-hidden="true"></span>
+    {% else %}
+    <span class="cam-estado">{{ 'Em manutenção' if estado == 'manutenção' else 'Inativa' }}</span>
+    {% endif %}
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
+  </div>
+  <div class="cam-card-info">
+    <div class="cam-card-topo">
+      <span class="cam-codigo">{{ cam.codigo_identificador }}</span>
+      <b class="status {{ estado | replace(' ', '_') }}">{{ estado | upper }}</b>
+    </div>
+    <span class="cam-setor">{{ cam.setor.nome_setor }}</span>
+    <span class="cam-fps">{{ cam.fps_operacao }} FPS</span>
+  </div>
+</article>
+{% endmacro %}

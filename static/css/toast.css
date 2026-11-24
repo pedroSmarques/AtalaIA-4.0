@@ -1,0 +1,81 @@
+/* Toasts de confirmação e erro (vidro, ícone, barra de tempo).
+   Usado pelo painel (base.html) e pela tela de login. Os valores entre var(..., X)
+   funcionam mesmo onde hud.css não é carregado. */
+
+.toasts {
+  position: fixed;
+  top: var(--toast-top, 16px);
+  right: 16px;
+  z-index: 200;
+  display: flex; flex-direction: column; gap: 10px;
+  width: min(400px, calc(100vw - 32px));
+  pointer-events: none;
+}
+.toast {
+  --cor: var(--ciano, #3bb4d6);
+  --duracao: 5000ms;
+  position: relative; overflow: hidden;
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 8px 15px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--vidro-borda, rgba(130, 160, 215, .22));
+  background: var(--vidro-forte, rgba(16, 23, 43, .88));
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+          backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 14px 36px -10px rgba(0, 0, 0, .65);
+  color: var(--texto, #e8edf5);
+  font-family: 'Manrope', system-ui, sans-serif;
+  pointer-events: auto;
+  animation: toast-entra .3s cubic-bezier(.22, 1, .36, 1) both;
+}
+.toast-sucesso { --cor: var(--verde, #2dd4a0); }
+.toast-erro    { --cor: var(--vermelho, #ef4444); }
+.toast-aviso   { --cor: var(--amarelo, #f5b324); }
+
+.toast-icone {
+  flex: none; width: 30px; height: 30px;
+  display: grid; place-items: center;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--cor) 16%, transparent);
+  color: var(--cor);
+}
+.toast-icone svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.toast-texto { flex: 1; min-width: 0; padding-top: 5px; font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+.toast-fechar {
+  flex: none; width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border: 0; border-radius: 8px; background: none;
+  color: var(--suave, #9aa6bd); cursor: pointer;
+  transition: color .16s, background .16s;
+}
+.toast-fechar svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.toast-fechar:hover { color: var(--texto, #e8edf5); background: rgba(255, 255, 255, .07); }
+.toast-fechar:focus-visible { outline: 2px solid var(--ciano, #3bb4d6); outline-offset: 1px; }
+
+/* barra de tempo: esvazia durante a duração; pausa com o mouse/foco por cima */
+.toast-barra {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+  background: var(--cor); transform-origin: left center;
+  animation: toast-tempo var(--duracao) linear forwards;
+}
+.toast:hover .toast-barra, .toast:focus-within .toast-barra { animation-play-state: paused; }
+
+.toast.saindo { animation: toast-sai .2s cubic-bezier(.4, 0, 1, 1) forwards; }
+
+@keyframes toast-entra { from { opacity: 0; transform: translateX(16px) scale(.98); } }
+@keyframes toast-sai   { to   { opacity: 0; transform: translateX(16px) scale(.98); } }
+@keyframes toast-tempo { to   { transform: scaleX(0); } }
+
+@media (max-width: 639px) {
+  .toasts { left: 16px; right: 16px; width: auto; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .toast { background: #10172b; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .toast { background: #10172b; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast, .toast.saindo { animation: none; }
+  .toast-barra { animation: none; transform: none; }   /* a barra fica cheia; o aviso some pelo temporizador */
+}

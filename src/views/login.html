@@ -10,14 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-  <style>
-    .flash-container{position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:380px}
-    .flash{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:8px;font-size:14px;gap:12px}
-    .flash-sucesso{background:#1a2f1e;border:1px solid #2dd4a0;color:#2dd4a0}
-    .flash-erro{background:#2f1a1a;border:1px solid #ef4444;color:#ef4444}
-    .flash-aviso{background:#2f2a1a;border:1px solid #f5b324;color:#f5b324}
-    .flash-fechar{background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:inherit;padding:0}
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+  <script src="{{ url_for('static', filename='js/toast.js') }}" defer></script>
 </head>
 <body>
 {% include 'componentes/mensagens.html' %}

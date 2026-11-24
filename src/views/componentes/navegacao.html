@@ -51,6 +51,7 @@
 {% macro item_barra(it) %}
   {% set ativo = request.endpoint == it.ep or request.endpoint in it.tambem %}
   <a href="{{ url_for(it.ep) }}" class="nav-item {{ 'ativo' if ativo }}" {% if ativo %}aria-current="page"{% endif %}>
+    {% if ativo %}<span class="ind-ativo" aria-hidden="true"></span>{% endif %}
     <svg viewBox="0 0 24 24" aria-hidden="true">{{ icones[it.ic] | safe }}</svg>
     <span>{{ it.rotulo }}</span>
     {% if it.ic == 'alertas' and incidentes_pendentes_count is defined and incidentes_pendentes_count > 0 %}
@@ -76,6 +77,7 @@
     {% for it in itens %}
     {% set ativo = request.endpoint == it.ep or request.endpoint in it.tambem %}
     <a href="{{ url_for(it.ep) }}" class="menu-item {{ 'ativo' if ativo }}" {% if ativo %}aria-current="page"{% endif %}>
+      {% if ativo %}<span class="ind-ativo" aria-hidden="true"></span>{% endif %}
       <svg viewBox="0 0 24 24" aria-hidden="true">{{ icones[it.ic] | safe }}</svg>
       {{ it.rotulo }}
       {% if it.ic == 'alertas' and incidentes_pendentes_count is defined and incidentes_pendentes_count > 0 %}
@@ -109,6 +111,7 @@
 
   <button type="button" id="btnMais" class="nav-item nav-mais {{ 'ativo' if mais_ativo }}"
           aria-haspopup="dialog" aria-expanded="false" aria-controls="painelMais">
+    {% if mais_ativo %}<span class="ind-ativo" aria-hidden="true"></span>{% endif %}
     <span class="mais-icone" aria-hidden="true">
       <svg class="mais-ic-pontos" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>
       <svg class="mais-ic-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
