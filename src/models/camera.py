@@ -22,7 +22,7 @@ class Camera(Base):
     fk_Setor_id_setor = Column(Integer, ForeignKey("Setor.id_setor"), nullable=False)
 
     # Relacionamentos
-    setor = relationship("Setor", back_populates="cameras")
+    setor = relationship("Setor", back_populates="cameras", lazy="joined")  # lido pelos templates apos fechar a sessao
     incidentes = relationship("Incidente", back_populates="camera")
 
     def __repr__(self):

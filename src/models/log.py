@@ -15,7 +15,7 @@ class Log(Base):
     fk_Usuarios_id_usuario = Column(Integer, ForeignKey("Usuarios.id_usuario"), nullable=True)
 
     # Relacionamentos
-    usuario = relationship("Usuario", back_populates="logs")
+    usuario = relationship("Usuario", back_populates="logs", lazy="joined")  # lido pelos templates apos fechar a sessao
 
     def __repr__(self):
         return f"<Log(id={self.id_log}, acao='{self.acao_realizada}')>"

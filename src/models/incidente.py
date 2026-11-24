@@ -29,9 +29,10 @@ class Incidente(Base):
     fk_Usuarios_id_usuario = Column(Integer, ForeignKey("Usuarios.id_usuario"), nullable=True)
 
     # Relacionamentos
-    camera = relationship("Camera", back_populates="incidentes")
-    tipo_infracao = relationship("TipoInfracao", back_populates="incidentes")
-    responsavel = relationship("Usuario", back_populates="incidentes_atendidos")
+    # lazy="joined": os templates leem estas relacoes depois que a sessao ja foi fechada
+    camera = relationship("Camera", back_populates="incidentes", lazy="joined")
+    tipo_infracao = relationship("TipoInfracao", back_populates="incidentes", lazy="joined")
+    responsavel = relationship("Usuario", back_populates="incidentes_atendidos", lazy="joined")
     notificacoes = relationship("NotificacaoPush", back_populates="incidente", cascade="all, delete-orphan")
 
     def __repr__(self):

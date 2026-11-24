@@ -4,10 +4,14 @@ Assim nao e necessario um MySQL rodando para executar os testes.
 """
 import pytest
 import bcrypt
+from datetime import datetime, timedelta
 from app import criar_app
 from app.config import Config
 from src.database import inicializar_banco, Base, obter_engine, abrir_sessao
-from src.models import Usuario, CargoEnum, StatusContaEnum
+from src.models import (
+    Usuario, CargoEnum, StatusContaEnum, Setor, Camera, Incidente, TipoInfracao,
+    NivelRiscoEnum, GravidadeEnum, StatusAtendimentoEnum, StatusCameraEnum,
+)
 
 
 class ConfigTeste(Config):
@@ -83,3 +87,30 @@ def entrar(cliente, email, senha="senha_teste_123"):
     r = cliente.post("/login", data={"email": email, "senha_hash": senha})
     assert r.status_code == 302, f"login falhou para {email}: {r.status_code}"
     return r
+
+
+@pytest.fixture(scope="session")
+def dados_de_exemplo(app):
+    """Um setor, duas cameras, um tipo de infracao e alguns incidentes recentes."""
+    sessao = abrir_sessao()
+    try:
+        setor = Setor(nome_setor="Linha de Montagem", descricao="", nivel_risco=NivelRiscoEnum.alto)
+        tipo = TipoInfracao(nome="Capacete ausente", gravidade=GravidadeEnum.grave)
+        sessao.add_all([setor, tipo])
+        sessao.flush()
+        cam1 = Camera(codigo_identificador="CAM-01", url_rtsp_stream="rtsp://x/1",
+                      status=StatusCameraEnum.ativa, fps_operacao=15, fk_Setor_id_setor=setor.id_setor)
+        cam2 = Camera(codigo_identificador="CAM-02", url_rtsp_stream="rtsp://x/2",
+                      status=StatusCameraEnum.manutencao, fps_operacao=10, fk_Setor_id_setor=setor.id_setor)
+        sessao.add_all([cam1, cam2])
+        sessao.flush()
+        for n, status in enumerate([StatusAtendimentoEnum.pendente, StatusAtendimentoEnum.resolvido,
+                                    StatusAtendimentoEnum.falso_positivo]):
+            sessao.add(Incidente(
+                data_hora_deteccao=datetime.now() - timedelta(days=n + 1), caminho_snapshot="x.jpg",
+                confianca_ia=0.9, status_atendimento=status,
+                fk_Camera_id_camera=cam1.id_camera, fk_TipoInfracao_id_tipo_infracao=tipo.id_tipo_infracao,
+            ))
+        sessao.commit()
+    finally:
+        sessao.close()

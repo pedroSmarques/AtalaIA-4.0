@@ -1235,3 +1235,32 @@ html.modal-aberto { overflow: hidden; }
 @media (min-width: 1100px) {
   .perfil-grade { grid-template-columns: 1.15fr 1fr; }
 }
+
+/* =====================================================
+   MODAL DE RELATÓRIO
+   ===================================================== */
+.rel-rodape { flex-wrap: wrap; }
+.rel-rodape .btn { flex: 1 1 150px; }
+.campo input[type="date"] { color-scheme: dark; }
+.rel-status {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: var(--esp-campo);
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--borda-campo);
+  background: var(--bg-ciano);
+  font-size: 14px;
+}
+.rel-status[hidden] { display: none; }
+.rel-sucesso { border-color: var(--verde); background: var(--bg-verde); color: var(--verde); }
+.rel-erro    { border-color: var(--vermelho); background: var(--bg-vermelho); color: var(--vermelho); }
+.rel-spinner {
+  flex: none; width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(59,180,214,.3); border-top-color: var(--ciano);
+  animation: girar .7s linear infinite;
+}
+@media (min-width: 768px) {
+  .rel-rodape { justify-content: flex-end; }
+  .rel-rodape .btn { flex: none; min-width: 160px; }
+}

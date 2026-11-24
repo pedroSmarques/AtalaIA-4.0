@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, abort
 from app.autenticacao.decoradores import perfil_requerido
 from app.contexto import contexto_usuario as _contexto_usuario
 from src.database import abrir_sessao
+from src.dao.usuario_dao import UsuarioDAO
 from src.dao.camera_dao import CameraDAO
 from src.dao.incidente_dao import IncidenteDAO
 from src.dao.log_dao import LogDAO

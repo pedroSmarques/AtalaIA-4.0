@@ -33,17 +33,24 @@ def criar_app(config_class=Config):
     from app.rotas.supervisor import supervisor_bp
     from app.rotas.tecnico import tecnico_bp
     from app.perfil.rotas import perfil_bp
+    from app.relatorios.rotas import relatorios_bp
 
     app.register_blueprint(autenticacao_bp)
     app.register_blueprint(gestor_bp)
     app.register_blueprint(supervisor_bp)
     app.register_blueprint(tecnico_bp)
     app.register_blueprint(perfil_bp)
+    app.register_blueprint(relatorios_bp)
 
     # Filtros de template para avatares
     from app.contexto import iniciais_do_nome, url_da_foto
     app.jinja_env.filters["iniciais"] = iniciais_do_nome
     app.jinja_env.filters["url_foto"] = url_da_foto
+
+    # Modal de relatorio: quais tipos o cargo pode gerar e o periodo inicial dos campos
+    from app.relatorios.servico import tipos_do_perfil, periodo_padrao
+    app.jinja_env.globals["tipos_relatorio"] = tipos_do_perfil
+    app.jinja_env.globals["periodo_padrao_relatorio"] = periodo_padrao
 
     # Rota raiz -> redireciona para login
     @app.route("/")
@@ -72,7 +79,7 @@ def criar_app(config_class=Config):
             set_access_cookies(resposta, novo)
         # Telas autenticadas nunca ficam em cache: o botao "voltar" depois do logout
         # nao pode reabrir o painel a partir do cache do navegador.
-        if request.blueprint in ("gestor", "supervisor", "tecnico", "autenticacao", "perfil"):
+        if request.blueprint in ("gestor", "supervisor", "tecnico", "autenticacao", "perfil", "relatorios"):
             resposta.headers["Cache-Control"] = "no-store, max-age=0"
             resposta.headers["Pragma"] = "no-cache"
         return resposta

@@ -10,7 +10,7 @@
 </div>
 
 <div class="cards-grid cards-grid-2">
-  <div class="secao-card" style="cursor:pointer">
+  <div class="secao-card">
     <div class="secao-card-header coluna">
       <div class="card-icone ciano" style="margin-bottom:12px">
         <svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>
@@ -18,9 +18,9 @@
       <h2 class="secao-card-titulo">Relatório de Incidentes</h2>
       <p class="secao-card-sub">Exportar lista de ocorrências por período</p>
     </div>
-    <button class="btn btn-primario btn-sm" style="margin-top:12px">Gerar PDF</button>
+    <button type="button" class="btn btn-primario btn-sm" style="margin-top:12px" data-modal-open="modalRelatorio" data-relatorio="incidentes" aria-haspopup="dialog">Gerar PDF</button>
   </div>
-  <div class="secao-card" style="cursor:pointer">
+  <div class="secao-card">
     <div class="secao-card-header coluna">
       <div class="card-icone laranja" style="margin-bottom:12px">
         <svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg>
@@ -28,11 +28,7 @@
       <h2 class="secao-card-titulo">Relatório de Câmeras</h2>
       <p class="secao-card-sub">Disponibilidade e status das câmeras</p>
     </div>
-    <button class="btn btn-primario btn-sm" style="margin-top:12px">Gerar PDF</button>
+    <button type="button" class="btn btn-primario btn-sm" style="margin-top:12px" data-modal-open="modalRelatorio" data-relatorio="cameras" aria-haspopup="dialog">Gerar PDF</button>
   </div>
-</div>
-
-<div class="secao-card" style="margin-top:0">
-  <p class="secao-card-sub" style="padding:12px 0">Funcionalidade de exportação a ser integrada com a IA de análise.</p>
 </div>
 {% endblock %}

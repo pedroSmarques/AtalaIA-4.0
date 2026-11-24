@@ -11,6 +11,31 @@ function atualizarData() {
   el.textContent = texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
+// Aviso rápido (toast). tipo: 'sucesso' | 'erro' | 'aviso'
+function mostrarToast(tipo, mensagem) {
+  let caixa = document.getElementById('flashContainer');
+  if (!caixa) {
+    caixa = document.createElement('div');
+    caixa.id = 'flashContainer';
+    caixa.className = 'flash-container';
+    document.body.appendChild(caixa);
+  }
+  const item = document.createElement('div');
+  item.className = `flash flash-${tipo}`;
+  item.setAttribute('role', tipo === 'erro' ? 'alert' : 'status');
+  const texto = document.createElement('span');
+  texto.textContent = mensagem;
+  const fechar = document.createElement('button');
+  fechar.type = 'button';
+  fechar.className = 'flash-fechar';
+  fechar.setAttribute('aria-label', 'Fechar');
+  fechar.textContent = '×';
+  fechar.addEventListener('click', () => item.remove());
+  item.append(texto, fechar);
+  caixa.appendChild(item);
+  setTimeout(() => item.remove(), 5000);
+}
+
 // Toggle do painel de notificações
 function initNotificacoes() {
   const btn    = document.getElementById('btnNotif');
@@ -163,7 +188,7 @@ function mensagemDoCampo(el) {
   return el.validationMessage || 'Valor inválido.';
 }
 
-function mostrarErro(el) {
+function mostrarErro(el, texto) {
   const campo = el.closest('.campo') || el.parentElement;
   campo.classList.add('campo-erro');
   let msg = campo.querySelector('.msg-erro');
@@ -173,7 +198,7 @@ function mostrarErro(el) {
     msg.id = `${el.id || el.name}Erro`;
     campo.appendChild(msg);
   }
-  msg.textContent = mensagemDoCampo(el);
+  msg.textContent = texto || mensagemDoCampo(el);
   el.setAttribute('aria-invalid', 'true');
   const ids = (el.getAttribute('aria-describedby') || '').split(' ').filter(i => i && i !== msg.id);
   el.setAttribute('aria-describedby', [...ids, msg.id].join(' '));
@@ -241,7 +266,7 @@ function initFormularios() {
       form.querySelectorAll('.msg-erro').forEach(m => m.remove());
       if (invalidos.length) {
         e.preventDefault();
-        invalidos.forEach(mostrarErro);
+        invalidos.forEach(el => mostrarErro(el));
         invalidos[0].focus();
         return;
       }
@@ -399,7 +424,139 @@ function initPerfil() {
   });
 }
 
+// ---------------------------------------------------------------
+// Relatórios em PDF: modal com tipo, período e observações.
+// "Baixar PDF" pede o arquivo ao servidor; "Enviar por e-mail" é SIMULADO no servidor
+// (valida, gera, registra no log — o envio real é a próxima etapa).
+// ---------------------------------------------------------------
+function initRelatorios() {
+  const form = document.getElementById('formRelatorio');
+  if (!form) return;
+  const $ = id => document.getElementById(id);
+  const tipo = $('relTipo'), inicio = $('relInicio'), fim = $('relFim');
+  const obs = $('relObs'), contagem = $('relObsContagem'), email = $('relEmail');
+  const status = $('relStatus'), btnBaixar = $('btnRelBaixar'), btnEmail = $('btnRelEmail');
+  const campos = { tipo, inicio, fim, observacoes: obs, destinatario: email };
+  const rotuloEmail = btnEmail.querySelector('.btn-rotulo').textContent;
+
+  // o botão que abriu o modal escolhe o tipo
+  document.querySelectorAll('[data-relatorio]').forEach(b => b.addEventListener('click', () => {
+    if ([...tipo.options].some(o => o.value === b.dataset.relatorio)) tipo.value = b.dataset.relatorio;
+  }));
+
+  const atualizarContagem = () => { contagem.textContent = String(obs.value.length); };
+  obs.addEventListener('input', atualizarContagem);
+  form.addEventListener('input', e => limparErro(e.target));
+  // fechar o modal faz form.reset(): limpa também o aviso de status
+  form.addEventListener('reset', () => { mostrarStatus(''); setTimeout(atualizarContagem, 0); });
+
+  function mostrarStatus(texto, estado = 'info') {
+    status.hidden = !texto;
+    status.className = 'rel-status rel-' + estado;
+    status.replaceChildren();
+    if (!texto) return;
+    if (estado === 'info') {
+      const girar = document.createElement('span');
+      girar.className = 'rel-spinner';
+      girar.setAttribute('aria-hidden', 'true');
+      status.appendChild(girar);
+    }
+    status.appendChild(document.createTextNode(texto));
+  }
+
+  function validar(comEmail) {
+    form.querySelectorAll('.campo-erro').forEach(c => c.classList.remove('campo-erro'));
+    form.querySelectorAll('.msg-erro').forEach(m => m.remove());
+    const erros = [];
+    if (!tipo.value) erros.push([tipo, 'Escolha um tipo de relatório.']);
+    if (!inicio.value) erros.push([inicio, 'Informe a data inicial.']);
+    if (!fim.value) erros.push([fim, 'Informe a data final.']);
+    else if (inicio.value && fim.value < inicio.value) erros.push([fim, 'A data final deve ser igual ou depois da inicial.']);
+    if (comEmail) {
+      if (!email.value.trim()) erros.push([email, 'Informe o e-mail do destinatário.']);
+      else if (!email.checkValidity()) erros.push([email, 'Informe um e-mail válido, como nome@empresa.com.']);
+    }
+    erros.forEach(([el, texto]) => mostrarErro(el, texto));
+    erros[0]?.[0].focus();
+    return erros.length === 0;
+  }
+
+  function ocupado(sim) {
+    btnBaixar.disabled = sim;
+    btnEmail.disabled = sim;
+  }
+
+  async function pedir(url) {
+    const resposta = await fetch(url, { method: 'POST', body: new FormData(form), credentials: 'same-origin' });
+    if (resposta.redirected && resposta.url.includes('/login')) {
+      window.location.href = resposta.url;           // sessão expirou
+      throw new Error('sessao');
+    }
+    return resposta;
+  }
+
+  async function lerErro(resposta) {
+    let corpo = {};
+    try { corpo = await resposta.json(); } catch (_) { /* resposta sem JSON */ }
+    const mensagem = corpo.mensagem ||
+      (resposta.status === 403 ? 'Seu perfil não tem permissão para este relatório.' : 'Não foi possível concluir. Tente novamente.');
+    if (corpo.campo && campos[corpo.campo] && resposta.status === 400) {
+      mostrarErro(campos[corpo.campo], mensagem);
+      campos[corpo.campo].focus();
+      mostrarStatus('');
+    } else {
+      mostrarStatus(mensagem, 'erro');
+    }
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!validar(false)) return;
+    ocupado(true);
+    btnBaixar.classList.add('carregando');
+    mostrarStatus('Gerando o PDF...');
+    try {
+      const resposta = await pedir(form.action);
+      if (!resposta.ok) { await lerErro(resposta); return; }
+      const nome = /filename="?([^";]+)"?/.exec(resposta.headers.get('Content-Disposition') || '')?.[1] || 'relatorio-atalaia.pdf';
+      const url = URL.createObjectURL(await resposta.blob());
+      const a = document.createElement('a');
+      a.href = url; a.download = nome;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      mostrarStatus(`PDF gerado: ${nome}`, 'sucesso');
+      mostrarToast('sucesso', 'Relatório gerado. O download começou.');
+    } catch (erro) {
+      if (erro.message !== 'sessao') mostrarStatus('Sem conexão com o servidor. Tente novamente.', 'erro');
+    } finally {
+      btnBaixar.classList.remove('carregando');
+      ocupado(false);
+    }
+  });
+
+  btnEmail.addEventListener('click', async () => {
+    if (!validar(true)) return;
+    ocupado(true);
+    btnEmail.querySelector('.btn-rotulo').textContent = 'Enviando...';
+    mostrarStatus('Enviando...');
+    try {
+      // espera ao menos um instante para a pessoa ver o estado "Enviando..."
+      const [resposta] = await Promise.all([pedir(form.dataset.urlEmail), new Promise(r => setTimeout(r, 900))]);
+      if (!resposta.ok) { await lerErro(resposta); return; }
+      const corpo = await resposta.json();
+      mostrarStatus(corpo.mensagem, 'sucesso');
+      mostrarToast('sucesso', corpo.mensagem);
+    } catch (erro) {
+      if (erro.message !== 'sessao') mostrarStatus('Sem conexão com o servidor. Tente novamente.', 'erro');
+    } finally {
+      btnEmail.querySelector('.btn-rotulo').textContent = rotuloEmail;
+      ocupado(false);
+    }
+  });
+}
+
 atualizarData();
+initRelatorios();
 initAvatares();
 initPerfil();
 initNavegacao();

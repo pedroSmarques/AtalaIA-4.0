@@ -76,6 +76,8 @@
 
 </div>
 
+{% if tipos_relatorio(usuario_cargo) %}{% include 'componentes/relatorio_modal.html' %}{% endif %}
+
 <div id="pushBanner" class="push-banner" role="banner">
   <svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/></svg>
   <p>Receba alertas instantâneos de novos incidentes.</p>
