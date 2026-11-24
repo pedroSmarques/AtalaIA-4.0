@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from app.config import Config
-from src.database import inicializar_banco, abrir_sessao, Base, obter_engine
+from src.database import inicializar_banco, abrir_sessao, Base, obter_engine, garantir_colunas_novas
 from src.models import Usuario, CargoEnum, StatusContaEnum
 from src.models import (  # noqa: F401
     Setor, Camera, Incidente, TipoInfracao, NotificacaoPush, Log
@@ -98,6 +98,7 @@ def main():
     try:
         inicializar_banco(Config.DATABASE_URL)
         Base.metadata.create_all(bind=obter_engine())
+        garantir_colunas_novas()
     except Exception as exc:
         msg = str(exc).lower()
         print()

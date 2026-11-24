@@ -25,6 +25,7 @@ class Usuario(Base):
     cargo = Column(Enum(CargoEnum), nullable=False)
     status_conta = Column(Enum(StatusContaEnum), nullable=False)
     token_push = Column(String(255), nullable=True)
+    foto_perfil = Column(String(100), nullable=True)  # nome do arquivo em static/uploads/avatares/
     data_criacao = Column(DateTime, server_default=func.now())
 
     # Relacionamentos

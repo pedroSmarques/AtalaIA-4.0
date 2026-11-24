@@ -2,7 +2,7 @@ import os
 from flask import Flask, g, request
 from flask_jwt_extended import JWTManager, set_access_cookies, get_csrf_token
 from app.config import Config
-from src.database import inicializar_banco
+from src.database import inicializar_banco, garantir_colunas_novas
 
 jwt = JWTManager()
 
@@ -19,6 +19,10 @@ def criar_app(config_class=Config):
 
     # Inicializa o banco de dados
     inicializar_banco(app.config["DATABASE_URL"])
+    try:
+        garantir_colunas_novas()   # bancos antigos ganham as colunas novas sozinhos
+    except Exception:
+        pass                       # banco fora do ar: o erro aparece na primeira consulta
 
     # Inicializa extensoes
     jwt.init_app(app)
@@ -28,11 +32,18 @@ def criar_app(config_class=Config):
     from app.rotas.gestor import gestor_bp
     from app.rotas.supervisor import supervisor_bp
     from app.rotas.tecnico import tecnico_bp
+    from app.perfil.rotas import perfil_bp
 
     app.register_blueprint(autenticacao_bp)
     app.register_blueprint(gestor_bp)
     app.register_blueprint(supervisor_bp)
     app.register_blueprint(tecnico_bp)
+    app.register_blueprint(perfil_bp)
+
+    # Filtros de template para avatares
+    from app.contexto import iniciais_do_nome, url_da_foto
+    app.jinja_env.filters["iniciais"] = iniciais_do_nome
+    app.jinja_env.filters["url_foto"] = url_da_foto
 
     # Rota raiz -> redireciona para login
     @app.route("/")
@@ -61,7 +72,7 @@ def criar_app(config_class=Config):
             set_access_cookies(resposta, novo)
         # Telas autenticadas nunca ficam em cache: o botao "voltar" depois do logout
         # nao pode reabrir o painel a partir do cache do navegador.
-        if request.blueprint in ("gestor", "supervisor", "tecnico", "autenticacao"):
+        if request.blueprint in ("gestor", "supervisor", "tecnico", "autenticacao", "perfil"):
             resposta.headers["Cache-Control"] = "no-store, max-age=0"
             resposta.headers["Pragma"] = "no-cache"
         return resposta

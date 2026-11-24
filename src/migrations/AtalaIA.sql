@@ -27,6 +27,7 @@ CREATE TABLE usuarios (
     cargo ENUM('Gestor', 'Supervisor', 'Tecnico') NOT NULL,
     status_conta ENUM('ativo', 'inativo', 'bloqueado') NOT NULL,
     token_push VARCHAR(255) NULL,
+    foto_perfil VARCHAR(100) NULL, -- nome do arquivo em static/uploads/avatares/
     data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -97,5 +98,14 @@ CREATE TABLE logs (
     fk_Usuarios_id_usuario INT NULL, -- NULLable para permitir logs do próprio sistema
     FOREIGN KEY (fk_Usuarios_id_usuario) REFERENCES Usuarios(id_usuario)
 );
+
+-- ==========================================================
+-- 3. Alterações posteriores (para bancos já criados)
+--    Quem criou o banco antes deste script rode os comandos abaixo.
+--    (criar_usuarios_teste.py e o próprio app também aplicam isto sozinhos.)
+-- ==========================================================
+
+-- Foto de perfil do usuário (Meu perfil)
+ALTER TABLE usuarios ADD COLUMN foto_perfil VARCHAR(100) NULL AFTER token_push;
 
 -- FIM DO SCRIPT

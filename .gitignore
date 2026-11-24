@@ -36,3 +36,6 @@ captures/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Fotos de perfil enviadas pelos usuarios
+static/uploads/

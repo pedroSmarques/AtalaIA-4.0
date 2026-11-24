@@ -15,6 +15,7 @@
     .flash-fechar{background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:inherit;padding:0}
   </style>
 </head>
+{% from 'componentes/avatar.html' import avatar %}
 <body>
 {% include 'componentes/mensagens.html' %}
 <div class="layout">
@@ -39,8 +40,12 @@
             <span class="cargo">{{ usuario_cargo | upper }}</span>
           </div>
           <div class="avatar-menu">
-            <button type="button" id="btnAvatar" class="avatar" aria-label="Menu do usuário" aria-haspopup="menu" aria-expanded="false" aria-controls="menuAvatar">{{ usuario_iniciais }}</button>
+            <button type="button" id="btnAvatar" class="avatar" aria-label="Menu do usuário" aria-haspopup="menu" aria-expanded="false" aria-controls="menuAvatar">{{ avatar(usuario_nome, usuario_foto) }}</button>
             <div id="menuAvatar" class="avatar-opcoes" role="menu">
+              <a href="{{ url_for('perfil.meu_perfil') }}" class="avatar-link" role="menuitem">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>
+                Meu perfil
+              </a>
               <form method="post" action="{{ url_for('autenticacao.logout') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                 <button type="submit" class="avatar-sair" role="menuitem">

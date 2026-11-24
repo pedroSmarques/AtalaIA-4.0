@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% from 'componentes/formulario.html' import modal, campo, campo_select, campo_senha with context %}
+{% from 'componentes/avatar.html' import avatar %}
 {% block titulo %}Usuários{% endblock %}
 
 {% block conteudo %}
@@ -27,7 +28,7 @@
     {% for u in usuarios %}
     <li class="item-card">
       <div class="item-card-topo">
-        <span class="item-card-avatar" aria-hidden="true">{{ u.nome.split()[:2] | map('first') | join | upper }}</span>
+        <span class="item-card-avatar">{{ avatar(u.nome, u.foto_perfil | url_foto) }}</span>
         <div class="item-card-id">
           <strong class="item-card-nome">{{ u.nome }}</strong>
           <span class="item-card-email">{{ u.email }}</span>
@@ -62,7 +63,10 @@
       </div>
       {% for u in usuarios %}
       <div class="linha" style="grid-template-columns:1fr 1.5fr 100px 100px 80px">
-        <span style="font-weight:600;color:#fff;font-size:14px;overflow-wrap:anywhere">{{ u.nome }}</span>
+        <span class="linha-pessoa">
+          <span class="linha-avatar">{{ avatar(u.nome, u.foto_perfil | url_foto) }}</span>
+          <span style="font-weight:600;color:#fff;font-size:14px;overflow-wrap:anywhere">{{ u.nome }}</span>
+        </span>
         <span style="font-size:13px;color:var(--suave);overflow-wrap:anywhere">{{ u.email }}</span>
         <span style="font-size:13px;color:var(--ciano)">{{ u.cargo.value }}</span>
         <span><b class="status {{ u.status_conta.value }}">{{ u.status_conta.value | upper }}</b></span>

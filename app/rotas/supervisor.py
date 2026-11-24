@@ -1,32 +1,12 @@
 from flask import Blueprint, render_template, abort
-from flask_jwt_extended import get_jwt, get_jwt_identity
 from app.autenticacao.decoradores import perfil_requerido
+from app.contexto import contexto_usuario as _contexto_usuario
 from src.database import abrir_sessao
-from src.dao.usuario_dao import UsuarioDAO
 from src.dao.camera_dao import CameraDAO
 from src.dao.incidente_dao import IncidenteDAO
 from src.models import StatusCameraEnum, StatusAtendimentoEnum
 
 supervisor_bp = Blueprint("supervisor", __name__, url_prefix="/supervisor")
-
-
-def _contexto_usuario():
-    claims = get_jwt()
-    nome = ""
-    sessao = abrir_sessao()
-    try:
-        dao = UsuarioDAO(sessao)
-        usuario = dao.buscar_por_id(int(get_jwt_identity()))
-        if usuario:
-            nome = usuario.nome
-    finally:
-        sessao.close()
-    iniciais = "".join(p[0].upper() for p in nome.split()[:2]) if nome else "??"
-    return {
-        "usuario_nome": nome,
-        "usuario_cargo": claims.get("cargo", ""),
-        "usuario_iniciais": iniciais,
-    }
 
 
 @supervisor_bp.route("/")

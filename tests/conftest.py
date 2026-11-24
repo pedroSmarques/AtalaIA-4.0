@@ -67,3 +67,19 @@ def usuarios_teste(app):
 @pytest.fixture
 def cliente(app):
     return app.test_client()
+
+
+@pytest.fixture
+def csrf_ligado(app):
+    """Liga a protecao CSRF do JWT so durante o teste (por padrao os testes a desligam)."""
+    anterior = app.config["JWT_COOKIE_CSRF_PROTECT"]
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = True
+    yield
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = anterior
+
+
+def entrar(cliente, email, senha="senha_teste_123"):
+    """Faz login pelo formulario e devolve a resposta (espera redirecionamento)."""
+    r = cliente.post("/login", data={"email": email, "senha_hash": senha})
+    assert r.status_code == 302, f"login falhou para {email}: {r.status_code}"
+    return r

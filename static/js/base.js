@@ -331,7 +331,77 @@ function initNavegacao() {
   }
 }
 
+// ---------------------------------------------------------------
+// Avatares: se a foto não carregar, some e ficam as iniciais.
+// ---------------------------------------------------------------
+function initAvatares() {
+  // o evento "error" de <img> não borbulha: captura na fase de captura
+  document.addEventListener('error', e => {
+    if (e.target.matches?.('img.av-img')) e.target.remove();
+  }, true);
+  document.querySelectorAll('img.av-img').forEach(img => {
+    if (img.complete && img.naturalWidth === 0) img.remove();
+  });
+}
+
+// ---------------------------------------------------------------
+// Meu perfil: prévia da foto escolhida e aviso imediato de tipo/tamanho.
+// (a validação que vale é a do servidor — esta é só para a pessoa não esperar o envio)
+// ---------------------------------------------------------------
+function initPerfil() {
+  const input = document.getElementById('campoFoto');
+  if (!input) return;
+  const avatar = document.getElementById('perfilAvatar');
+  const aviso  = document.getElementById('fotoErro');
+  const campo  = input.closest('.campo');
+  const remover = document.getElementById('removerFoto');
+  const MAX = 2 * 1024 * 1024;
+  const TIPOS = ['image/jpeg', 'image/png', 'image/webp'];
+  let urlPrevia = null;
+
+  const mostrarAviso = texto => {
+    aviso.textContent = texto || '';
+    aviso.hidden = !texto;
+    campo.classList.toggle('campo-erro', Boolean(texto));
+  };
+
+  input.addEventListener('change', () => {
+    const arquivo = input.files[0];
+    if (urlPrevia) { URL.revokeObjectURL(urlPrevia); urlPrevia = null; }
+    mostrarAviso('');
+    if (!arquivo) return;
+    if (!TIPOS.includes(arquivo.type)) {
+      mostrarAviso('Envie uma imagem em JPG, PNG ou WebP.');
+      input.value = '';
+      return;
+    }
+    if (arquivo.size > MAX) {
+      mostrarAviso('A foto deve ter no máximo 2 MB.');
+      input.value = '';
+      return;
+    }
+    urlPrevia = URL.createObjectURL(arquivo);
+    avatar.querySelector('.av-img')?.remove();
+    const img = document.createElement('img');
+    img.className = 'av-img';
+    img.alt = '';
+    img.src = urlPrevia;
+    avatar.querySelector('.av')?.appendChild(img);
+    if (remover) remover.checked = false;
+  });
+
+  remover?.addEventListener('change', () => {
+    if (remover.checked) {
+      input.value = '';
+      mostrarAviso('');
+      avatar.querySelector('.av-img')?.remove();
+    }
+  });
+}
+
 atualizarData();
+initAvatares();
+initPerfil();
 initNavegacao();
 initNotificacoes();
 initPushBanner();

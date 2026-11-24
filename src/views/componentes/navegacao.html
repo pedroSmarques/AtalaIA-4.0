@@ -1,6 +1,6 @@
 {#
   Navegação única do ATALAIA — usada por todos os perfis.
-  Os itens são escolhidos pelo perfil da rota atual (request.blueprint):
+  Os itens são escolhidos pelo cargo do usuário logado (usuario_cargo):
   cada perfil só enxerga o que pode acessar.
   - "barra": aparece na barra inferior (celular/tablet até 1023px)
   - os demais itens vão para o painel "Mais"
@@ -16,6 +16,7 @@
   'logs':      '<path d="M4 6h16M4 12h16M4 18h8"/>',
   'sair':      '<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>'
 } %}
+{% from 'componentes/avatar.html' import avatar %}
 
 {% set menus = {
   'gestor': [
@@ -40,12 +41,12 @@
   ]
 } %}
 
-{% set itens = menus.get(request.blueprint, []) %}
+{% set itens = menus.get(usuario_cargo | lower, []) %}
 {% set no_barra = itens | selectattr('barra') | list %}
 {% set no_mais  = itens | rejectattr('barra') | list %}
 {# posição do botão "Mais": entre o 2º e o 3º item (entre Alertas e Câmeras) #}
 {% set pos_mais = 2 if no_barra | length > 2 else no_barra | length %}
-{% set mais_ativo = no_mais | selectattr('ep', 'equalto', request.endpoint) | list | length > 0 %}
+{% set mais_ativo = (no_mais | selectattr('ep', 'equalto', request.endpoint) | list | length > 0) or request.endpoint == 'perfil.meu_perfil' %}
 
 {% macro item_barra(it) %}
   {% set ativo = request.endpoint == it.ep or request.endpoint in it.tambem %}
@@ -85,6 +86,13 @@
   </nav>
 
   <div class="sidebar-rodape">
+    <a href="{{ url_for('perfil.meu_perfil') }}" class="menu-perfil {{ 'ativo' if request.endpoint == 'perfil.meu_perfil' }}" {% if request.endpoint == 'perfil.meu_perfil' %}aria-current="page"{% endif %}>
+      <span class="menu-perfil-avatar">{{ avatar(usuario_nome, usuario_foto) }}</span>
+      <span class="menu-perfil-texto">
+        <strong>{{ usuario_nome }}</strong>
+        <small>Meu perfil</small>
+      </span>
+    </a>
     <form method="post" action="{{ url_for('autenticacao.logout') }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <button type="submit" class="menu-item menu-sair">
@@ -124,7 +132,13 @@
       </a>
     </li>
     {% endfor %}
-    <li class="mais-li mais-li-sair" style="--i:{{ no_mais | length }}">
+    <li class="mais-li mais-li-perfil" style="--i:{{ no_mais | length }}">
+      <a href="{{ url_for('perfil.meu_perfil') }}" class="mais-item {{ 'ativo' if request.endpoint == 'perfil.meu_perfil' }}" {% if request.endpoint == 'perfil.meu_perfil' %}aria-current="page"{% endif %}>
+        <span class="mais-avatar">{{ avatar(usuario_nome, usuario_foto) }}</span>
+        Meu perfil
+      </a>
+    </li>
+    <li class="mais-li mais-li-sair" style="--i:{{ no_mais | length + 1 }}">
       <form method="post" action="{{ url_for('autenticacao.logout') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <button type="submit" class="mais-item mais-sair">

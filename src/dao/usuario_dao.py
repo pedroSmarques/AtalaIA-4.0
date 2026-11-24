@@ -1,6 +1,10 @@
 from sqlalchemy.orm import Session
 from src.models import Usuario, CargoEnum, StatusContaEnum
 
+# Valor especial: "nao mexer neste campo" (diferente de None, que limpa o campo)
+_SEM_MUDANCA = object()
+
+
 class UsuarioDAO:
     def __init__(self, db: Session):
         self.db = db
@@ -26,6 +30,27 @@ class UsuarioDAO:
 
     def listar_todos(self) -> list[Usuario]:
         return self.db.query(Usuario).all()
+
+    def atualizar_perfil(self, id_usuario: int, nome: str | None = None, foto_perfil=_SEM_MUDANCA) -> Usuario | None:
+        """Atualiza nome e/ou foto. foto_perfil=None remove a foto; omitido mantem a atual."""
+        usuario = self.buscar_por_id(id_usuario)
+        if not usuario:
+            return None
+        if nome is not None:
+            usuario.nome = nome
+        if foto_perfil is not _SEM_MUDANCA:
+            usuario.foto_perfil = foto_perfil
+        self.db.commit()
+        self.db.refresh(usuario)
+        return usuario
+
+    def atualizar_senha(self, id_usuario: int, nova_senha_hash: str) -> bool:
+        usuario = self.buscar_por_id(id_usuario)
+        if not usuario:
+            return False
+        usuario.senha_hash = nova_senha_hash
+        self.db.commit()
+        return True
 
     def atualizar_status(self, id_usuario: int, novo_status: StatusContaEnum) -> Usuario | None:
         usuario = self.buscar_por_id(id_usuario)

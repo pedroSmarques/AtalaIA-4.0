@@ -44,14 +44,15 @@
 
 {# Campo de texto/e-mail/número. Atributos extras entram por kwargs
    (ex.: inputmode='numeric', data_mascara='cpf', minlength=8). #}
-{% macro campo(id, nome, rotulo, tipo='text', obrigatorio=False, dica='', largo=False, valor='') %}
-<div class="campo{{ ' campo-full' if largo }}">
+{% macro campo(id, nome, rotulo, tipo='text', obrigatorio=False, dica='', largo=False, valor='', erro='') %}
+<div class="campo{{ ' campo-full' if largo }}{{ ' campo-erro' if erro }}">
   <label for="{{ id }}"{% if obrigatorio %} class="req"{% endif %}>{{ rotulo }}</label>
   <input type="{{ tipo }}" id="{{ id }}" name="{{ nome }}"{% if valor != '' %} value="{{ valor }}"{% endif %}
          {% if obrigatorio %}required{% endif %}
-         {% if dica %}aria-describedby="{{ id }}Dica"{% endif %}
+         {% if erro %}aria-invalid="true" aria-describedby="{{ id }}Erro"{% elif dica %}aria-describedby="{{ id }}Dica"{% endif %}
          {% for k, v in kwargs.items() %} {{ k | replace('_', '-') }}="{{ v }}"{% endfor %}>
   {% if dica %}<p class="campo-dica" id="{{ id }}Dica">{{ dica }}</p>{% endif %}
+  {% if erro %}<p class="msg-erro" id="{{ id }}Erro">{{ erro }}</p>{% endif %}
 </div>
 {% endmacro %}
 
@@ -66,19 +67,20 @@
 {% endmacro %}
 
 {# Senha com botão mostrar/ocultar #}
-{% macro campo_senha(id, nome, rotulo, obrigatorio=False, dica='', largo=False, minimo=8) %}
-<div class="campo{{ ' campo-full' if largo }}">
+{% macro campo_senha(id, nome, rotulo, obrigatorio=False, dica='', largo=False, minimo=8, erro='', autocomplete='new-password') %}
+<div class="campo{{ ' campo-full' if largo }}{{ ' campo-erro' if erro }}">
   <label for="{{ id }}"{% if obrigatorio %} class="req"{% endif %}>{{ rotulo }}</label>
   <div class="input-icone">
-    <input type="password" id="{{ id }}" name="{{ nome }}" autocomplete="new-password" minlength="{{ minimo }}"
+    <input type="password" id="{{ id }}" name="{{ nome }}" autocomplete="{{ autocomplete }}" minlength="{{ minimo }}"
            {% if obrigatorio %}required{% endif %}
-           {% if dica %}aria-describedby="{{ id }}Dica"{% endif %}>
+           {% if erro %}aria-invalid="true" aria-describedby="{{ id }}Erro"{% elif dica %}aria-describedby="{{ id }}Dica"{% endif %}>
     <button type="button" class="input-toggle" data-mostrar-senha aria-label="Mostrar senha" aria-pressed="false">
       <svg class="olho-aberto" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
       <svg class="olho-fechado" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A9.7 9.7 0 0112 5c6.5 0 10 7 10 7a17 17 0 01-3.2 4.2M6.6 6.6A17 17 0 002 12s3.5 7 10 7a9.6 9.6 0 004.4-1.1"/><path d="M9.9 9.9a3 3 0 004.2 4.2"/></svg>
     </button>
   </div>
   {% if dica %}<p class="campo-dica" id="{{ id }}Dica">{{ dica }}</p>{% endif %}
+  {% if erro %}<p class="msg-erro" id="{{ id }}Erro">{{ erro }}</p>{% endif %}
 </div>
 {% endmacro %}
 

@@ -11,6 +11,12 @@ def registrar_handlers_erro(app):
     def acesso_negado(e):
         return render_template("erros/403.html"), 403
 
+    @app.errorhandler(413)
+    def arquivo_grande(e):
+        from flask import flash, redirect, url_for
+        flash("O arquivo enviado é grande demais. A foto deve ter no máximo 2 MB.", "erro")
+        return redirect(url_for("perfil.meu_perfil"))
+
     @app.errorhandler(404)
     def nao_encontrado(e):
         return render_template("erros/404.html"), 404

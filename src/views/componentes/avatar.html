@@ -1,0 +1,14 @@
+{#
+  Avatar redondo: foto quando existe, iniciais quando não existe.
+  O elemento que contém o avatar define o tamanho (o avatar preenche 100%).
+
+  Uso:
+    {% from 'componentes/avatar.html' import avatar %}
+    {{ avatar(u.nome, u.foto_perfil | url_foto) }}
+    {{ avatar(usuario_nome, usuario_foto) }}
+
+  Se a foto não carregar, base.js remove a imagem e as iniciais aparecem.
+#}
+{% macro avatar(nome, foto=none) -%}
+<span class="av" aria-hidden="true"><span class="av-ini">{{ nome | iniciais }}</span>{% if foto %}<img class="av-img" src="{{ foto }}" alt="" width="256" height="256" decoding="async">{% endif %}</span>
+{%- endmacro %}

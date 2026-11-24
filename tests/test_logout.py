@@ -10,15 +10,6 @@ PERFIS = [
 ]
 
 
-@pytest.fixture
-def csrf_ligado(app):
-    """Liga o CSRF do JWT so durante o teste (o conftest o desliga por padrao)."""
-    anterior = app.config["JWT_COOKIE_CSRF_PROTECT"]
-    app.config["JWT_COOKIE_CSRF_PROTECT"] = True
-    yield
-    app.config["JWT_COOKIE_CSRF_PROTECT"] = anterior
-
-
 def _entrar(cliente, usuarios_teste, chave_email):
     r = cliente.post("/login", data={
         "email": usuarios_teste[chave_email],
