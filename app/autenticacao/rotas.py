@@ -71,11 +71,15 @@ def login():
 
 
 @autenticacao_bp.route("/logout", methods=["POST"])
-@perfil_requerido("Gestor", "Supervisor", "Tecnico")
 def logout():
+    """
+    Encerra a sessao: apaga os cookies de acesso e de renovacao e volta ao login.
+    Nao exige token valido: quem esta com a sessao vencida tambem precisa conseguir sair.
+    (Sair a forca so desconecta a pessoa, nao da acesso a nada.)
+    """
     resposta = make_response(redirect(url_for("autenticacao.login")))
     unset_jwt_cookies(resposta)
-    flash("Voce saiu com seguranca.", "sucesso")
+    flash("Você saiu do sistema", "sucesso")
     return resposta
 
 

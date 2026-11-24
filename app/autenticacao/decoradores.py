@@ -4,7 +4,7 @@ from flask_jwt_extended import (
     verify_jwt_in_request, get_jwt, get_jwt_identity,
     create_access_token, set_access_cookies,
 )
-from flask_jwt_extended.exceptions import NoAuthorizationError
+from flask_jwt_extended.exceptions import NoAuthorizationError, CSRFError
 from jwt.exceptions import ExpiredSignatureError
 
 
@@ -40,7 +40,10 @@ def perfil_requerido(*perfis):
                 except Exception:
                     flash("Sua sessao expirou. Faca login novamente.", "aviso")
                     return redirect(url_for("autenticacao.login"))
-            except (NoAuthorizationError, Exception):
+            except CSRFError:
+                # Token CSRF ausente ou invalido: recusa o POST (nao e falta de login)
+                abort(403)
+            except Exception:
                 return redirect(url_for("autenticacao.login"))
 
             if claims is None or claims.get("cargo") not in perfis:

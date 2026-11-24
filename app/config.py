@@ -19,6 +19,9 @@ class Config:
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=7)
     JWT_COOKIE_CSRF_PROTECT = True
     JWT_CSRF_METHODS = ["POST", "PUT", "PATCH", "DELETE"]
+    # Os formularios HTML enviam o token CSRF no campo oculto "csrf_token".
+    # Sem isto o flask-jwt-extended so le o cabecalho X-CSRF-TOKEN e recusa os formularios.
+    JWT_CSRF_CHECK_FORM = True
 
     # Banco de dados
     DATABASE_URL = os.environ.get("DATABASE_URL", "mysql+pymysql://root:@localhost:3306/atalaia")
