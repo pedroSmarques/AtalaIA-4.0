@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from app.autenticacao.decoradores import perfil_requerido
+from app.auditoria import registrar_acao
 from app.contexto import contexto_usuario as _contexto_usuario
+from app.rotas.gestor import ler_dados_da_camera
 from src.database import abrir_sessao
 from src.dao.camera_dao import CameraDAO
 from src.dao.log_dao import LogDAO
@@ -62,3 +64,24 @@ def logs():
     finally:
         sessao.close()
     return render_template("tecnico/logs.html", **ctx)
+
+
+@tecnico_bp.route("/cameras/<int:id_camera>/editar", methods=["POST"])
+@perfil_requerido("Tecnico")
+def editar_camera(id_camera: int):
+    """O tecnico ajusta so a conexao: URL, FPS e status (codigo e setor ficam com o gestor)."""
+    dados, erro = ler_dados_da_camera(request.form, completo=False)
+    if erro:
+        flash(erro, "erro")
+        return redirect(url_for("tecnico.cameras"))
+    sessao = abrir_sessao()
+    try:
+        camera = CameraDAO(sessao).atualizar(id_camera, **dados)
+        if not camera:
+            abort(404)
+        codigo = camera.codigo_identificador
+    finally:
+        sessao.close()
+    registrar_acao("CAMERA_EDITADA", f"{codigo} (ajuste tecnico)", tabela="Camera", id_registro=id_camera)
+    flash(f"Câmera {codigo} atualizada.", "sucesso")
+    return redirect(url_for("tecnico.cameras"))

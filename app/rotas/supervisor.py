@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template, abort, request, redirect, url_for, flash
+from flask_jwt_extended import get_jwt_identity
 from app.autenticacao.decoradores import perfil_requerido
+from app.auditoria import registrar_acao
 from app.contexto import contexto_usuario as _contexto_usuario
 from src.database import abrir_sessao
 from src.dao.camera_dao import CameraDAO
@@ -102,3 +104,45 @@ def relatorio_ia():
     finally:
         sessao.close()
     return render_template("supervisor/relatorio_ia.html", **ctx)
+
+
+# Do que cada status pode ir (nao reabre incidente ja encerrado)
+_TRANSICOES = {
+    StatusAtendimentoEnum.pendente: {
+        StatusAtendimentoEnum.em_atendimento, StatusAtendimentoEnum.resolvido, StatusAtendimentoEnum.falso_positivo,
+    },
+    StatusAtendimentoEnum.em_atendimento: {
+        StatusAtendimentoEnum.resolvido, StatusAtendimentoEnum.falso_positivo,
+    },
+}
+
+
+@supervisor_bp.route("/alertas/<int:id_incidente>/atendimento", methods=["POST"])
+@perfil_requerido("Supervisor")
+def atender(id_incidente: int):
+    try:
+        novo = StatusAtendimentoEnum(request.form.get("status", ""))
+    except ValueError:
+        abort(400)
+    observacao = (request.form.get("observacao") or "").strip() or None
+    if observacao and len(observacao) > 1000:
+        flash("A observação pode ter no máximo 1000 caracteres.", "erro")
+        return redirect(url_for("supervisor.detalhe", id_incidente=id_incidente))
+
+    sessao = abrir_sessao()
+    try:
+        dao = IncidenteDAO(sessao)
+        incidente = dao.buscar_por_id(id_incidente)
+        if not incidente:
+            abort(404)
+        if novo not in _TRANSICOES.get(incidente.status_atendimento, set()):
+            flash("Este incidente não pode mudar para esse status.", "erro")
+            return redirect(url_for("supervisor.detalhe", id_incidente=id_incidente))
+        dao.atualizar_atendimento(id_incidente, novo, int(get_jwt_identity()), observacao)
+    finally:
+        sessao.close()
+    registrar_acao("INCIDENTE_ATENDIDO", f"#A-{id_incidente} -> {novo.value}", tabela="Incidente", id_registro=id_incidente)
+    flash(f"Incidente #A-{id_incidente}: {novo.value}.", "sucesso")
+    if novo == StatusAtendimentoEnum.em_atendimento:
+        return redirect(url_for("supervisor.detalhe", id_incidente=id_incidente))   # ainda falta encerrar
+    return redirect(url_for("supervisor.alertas"))

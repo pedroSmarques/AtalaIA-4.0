@@ -34,17 +34,20 @@
       <p style="color:#fff;font-size:15px">{{ "%.0f"|format(incidente.confianca_ia * 100) }}%</p>
     </div>
   </div>
-  {% if incidente.status_atendimento.value == 'pendente' %}
+  {% if incidente.status_atendimento.value in ('pendente', 'em atendimento') %}
   <div style="padding-top:16px;border-top:1px solid var(--borda)">
     <h3 style="color:#fff;margin-bottom:12px">Atender incidente</h3>
-    <form method="post" action="#" novalidate data-validar>
+    <form method="post" action="{{ url_for('supervisor.atender', id_incidente=incidente.id_incidente) }}" novalidate data-validar>
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <div class="form-grid">
         {{ campo_texto_longo('obsAtendimento', 'observacao', 'Observação', dica='Opcional. Descreva o que foi feito ou observado.') }}
       </div>
       <div class="form-acoes">
+        <button type="submit" name="status" value="falso positivo" class="btn btn-secundario">Falso positivo</button>
         <button type="submit" name="status" value="resolvido" class="btn btn-secundario">Marcar resolvido</button>
+        {% if incidente.status_atendimento.value == 'pendente' %}
         <button type="submit" name="status" value="em atendimento" class="btn btn-primario">Iniciar atendimento</button>
+        {% endif %}
       </div>
     </form>
   </div>

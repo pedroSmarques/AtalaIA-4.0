@@ -2,11 +2,12 @@
 Relatorios: quais tipos existem, quem pode gerar cada um, validacao do periodo
 e coleta dos dados que vao para o PDF.
 """
-import re
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 
 from sqlalchemy.orm import joinedload
+
+from app.validacao import email_valido
 
 from src.models import Camera, Incidente, StatusAtendimentoEnum, StatusCameraEnum
 
@@ -28,7 +29,6 @@ DIAS_PADRAO = 30
 DIAS_MAXIMOS = 366
 LIMITE_LINHAS = 1000
 LIMITE_OBSERVACOES = 1000
-_REGEX_EMAIL = re.compile(r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$")
 
 
 class ErroRelatorio(ValueError):
@@ -94,7 +94,7 @@ def validar_destinatario(texto: str) -> str:
     texto = (texto or "").strip()
     if not texto:
         raise ErroRelatorio("Informe o e-mail do destinatário.", "destinatario")
-    if len(texto) > 254 or not _REGEX_EMAIL.match(texto):
+    if not email_valido(texto):
         raise ErroRelatorio("Informe um e-mail válido, como nome@empresa.com.", "destinatario")
     return texto
 

@@ -2,13 +2,13 @@
 import bcrypt
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
 from flask_jwt_extended import get_jwt_identity
+from app.auditoria import registrar_acao
 from app.autenticacao.decoradores import perfil_requerido
 from app.autenticacao.servico import verificar_bloqueio, registrar_falha, limpar_tentativas
 from app.contexto import contexto_usuario
 from app.perfil.fotos import ErroFoto, salvar_foto, apagar_foto, processar_foto
 from src.database import abrir_sessao
 from src.dao.usuario_dao import UsuarioDAO
-from src.dao.log_dao import LogDAO
 
 perfil_bp = Blueprint("perfil", __name__, url_prefix="/perfil")
 
@@ -36,18 +36,6 @@ def _pagina(erros=None, valores=None, status=200):
     ctx["erros"] = erros or {}
     ctx["valores"] = valores or {}
     return render_template("perfil/meu_perfil.html", **ctx), status
-
-
-def _registrar(acao: str, detalhes: str):
-    sessao = abrir_sessao()
-    try:
-        id_usuario = int(get_jwt_identity())
-        LogDAO(sessao).registrar_log(
-            acao, request.remote_addr or "desconhecido",
-            tabela="Usuarios", id_registro=id_usuario, detalhes=detalhes, id_usuario=id_usuario,
-        )
-    finally:
-        sessao.close()
 
 
 def _recusar_se_for_outro_usuario():
@@ -117,7 +105,7 @@ def salvar_dados():
         apagar_foto(pasta, foto_antiga)
 
     detalhe = "nome" + (", foto" if nova_foto else "") + (", foto removida" if remover and not nova_foto else "")
-    _registrar("PERFIL_ATUALIZADO", detalhe)
+    registrar_acao("PERFIL_ATUALIZADO", detalhe, tabela="Usuarios", id_registro=id_usuario)
     flash("Perfil atualizado.", "sucesso")
     return redirect(url_for("perfil.meu_perfil"))
 
@@ -172,6 +160,6 @@ def trocar_senha():
         sessao.close()
 
     limpar_tentativas(chave_bloqueio)
-    _registrar("SENHA_ALTERADA", "Senha alterada pelo proprio usuario")
+    registrar_acao("SENHA_ALTERADA", "Senha alterada pelo proprio usuario", tabela="Usuarios", id_registro=id_usuario)
     flash("Senha alterada.", "sucesso")
     return redirect(url_for("perfil.meu_perfil"))

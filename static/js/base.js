@@ -555,7 +555,30 @@ function initRelatorios() {
   });
 }
 
+// ---------------------------------------------------------------
+// Edição em modal: um botão com data-editar="idDoModal", data-acao (URL do POST)
+// e data-campos (JSON nome→valor) abre o modal já preenchido.
+// ---------------------------------------------------------------
+function initEdicao() {
+  document.querySelectorAll('[data-editar]').forEach(botao => {
+    botao.addEventListener('click', () => {
+      const overlay = document.getElementById(botao.dataset.editar);
+      const form = overlay?.querySelector('form');
+      if (!form) return;
+      form.action = botao.dataset.acao;
+      let campos = {};
+      try { campos = JSON.parse(botao.dataset.campos || '{}'); } catch (_) { /* sem dados */ }
+      Object.entries(campos).forEach(([nome, valor]) => {
+        const el = form.elements[nome];
+        if (el) el.value = valor;   // funciona para input, select, textarea e grupo de rádios
+      });
+      abrirModal(overlay, botao);
+    });
+  });
+}
+
 atualizarData();
+initEdicao();
 initRelatorios();
 initAvatares();
 initPerfil();

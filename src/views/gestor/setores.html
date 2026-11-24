@@ -32,7 +32,9 @@
         <b class="status {{ s.nivel_risco.value }}">{{ s.nivel_risco.value | upper }}</b>
       </div>
       <div class="item-card-acoes">
-        <button type="button" class="btn btn-secundario" aria-label="Editar setor {{ s.nome_setor }}">
+        <button type="button" class="btn btn-secundario" aria-label="Editar setor {{ s.nome_setor }}"
+                data-editar="modalEditSetor" data-acao="{{ url_for('gestor.editar_setor', id_setor=s.id_setor) }}"
+                data-campos="{{ {'nome_setor': s.nome_setor, 'descricao': s.descricao or '', 'nivel_risco': s.nivel_risco.value} | tojson | forceescape }}">
           <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
           Editar
         </button>
@@ -54,7 +56,9 @@
         <span style="font-weight:600;color:#fff;font-size:14px">{{ s.nome_setor }}</span>
         <span style="font-size:13px;color:var(--suave)">{{ s.descricao or '—' }}</span>
         <span><b class="status {{ s.nivel_risco.value }}">{{ s.nivel_risco.value | upper }}</b></span>
-        <button class="seta" title="Editar" aria-label="Editar setor {{ s.nome_setor }}">✎</button>
+        <button type="button" class="seta" title="Editar" aria-label="Editar setor {{ s.nome_setor }}"
+                data-editar="modalEditSetor" data-acao="{{ url_for('gestor.editar_setor', id_setor=s.id_setor) }}"
+                data-campos="{{ {'nome_setor': s.nome_setor, 'descricao': s.descricao or '', 'nivel_risco': s.nivel_risco.value} | tojson | forceescape }}">✎</button>
       </div>
       {% else %}
       <div class="estado-vazio"><p>Nenhum setor cadastrado.</p></div>
@@ -63,13 +67,33 @@
   </div>
 </div>
 
-{% call modal('modalSetor', 'Novo setor', sub='Defina a área da planta e o nível de risco.', cor='laranja',
+{% call modal('modalSetor', 'Novo setor', sub='Defina a área da planta e o nível de risco.', cor='laranja', acao=url_for('gestor.criar_setor'),
               icone='<path d="M3 9l9-6 9 6v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>') %}
   <fieldset class="form-secao">
     <legend class="form-secao-titulo">Identificação</legend>
     <div class="form-grid">
       {{ campo('setNome', 'nome_setor', 'Nome do setor', obrigatorio=True, largo=True, maxlength=50, placeholder='Ex.: Soldagem') }}
       {{ campo_texto_longo('setDescricao', 'descricao', 'Descrição', dica='Opcional. Ajuda a equipe a reconhecer a área.') }}
+    </div>
+  </fieldset>
+  <fieldset class="form-secao">
+    <legend class="form-secao-titulo">Nível de risco</legend>
+    <div class="opcoes" role="radiogroup" aria-label="Nível de risco">
+      <label class="opcao" style="--cor:var(--ciano)"><input type="radio" name="nivel_risco" value="baixo" checked><span class="opcao-cartao">Baixo</span></label>
+      <label class="opcao" style="--cor:var(--amarelo)"><input type="radio" name="nivel_risco" value="medio"><span class="opcao-cartao">Médio</span></label>
+      <label class="opcao" style="--cor:var(--laranja)"><input type="radio" name="nivel_risco" value="alto"><span class="opcao-cartao">Alto</span></label>
+      <label class="opcao" style="--cor:var(--vermelho)"><input type="radio" name="nivel_risco" value="critico"><span class="opcao-cartao">Crítico</span></label>
+    </div>
+  </fieldset>
+{% endcall %}
+
+{% call modal('modalEditSetor', 'Editar setor', sub='Altere o nome, a descrição ou o nível de risco.', cor='laranja', salvar='Salvar alterações',
+              icone='<path d="M3 9l9-6 9 6v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>') %}
+  <fieldset class="form-secao">
+    <legend class="form-secao-titulo">Identificação</legend>
+    <div class="form-grid">
+      {{ campo('editSetNome', 'nome_setor', 'Nome do setor', obrigatorio=True, largo=True, maxlength=50, placeholder='Ex.: Soldagem') }}
+      {{ campo_texto_longo('editSetDescricao', 'descricao', 'Descrição', dica='Opcional. Ajuda a equipe a reconhecer a área.') }}
     </div>
   </fieldset>
   <fieldset class="form-secao">

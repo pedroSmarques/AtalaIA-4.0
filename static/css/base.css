@@ -1264,3 +1264,8 @@ html.modal-aberto { overflow: hidden; }
   .rel-rodape { justify-content: flex-end; }
   .rel-rodape .btn { flex: none; min-width: 160px; }
 }
+
+/* formulario de uma acao so (bloquear/desbloquear) dentro de listas */
+.form-inline { display: inline-flex; }
+.item-card-acoes .form-inline { flex: 1; }
+.item-card-acoes .form-inline .btn { flex: 1; }

@@ -27,6 +27,20 @@ class CameraDAO:
     def listar_por_setor(self, id_setor: int) -> list[Camera]:
         return self.db.query(Camera).filter(Camera.fk_Setor_id_setor == id_setor).all()
 
+    def atualizar(self, id_camera: int, **campos) -> Camera | None:
+        """Atualiza so os campos informados (codigo_identificador, url_rtsp_stream, status, fps_operacao, fk_Setor_id_setor)."""
+        camera = self.buscar_por_id(id_camera)
+        if not camera:
+            return None
+        for nome, valor in campos.items():
+            setattr(camera, nome, valor)
+        self.db.commit()
+        self.db.refresh(camera)
+        return camera
+
+    def buscar_por_codigo(self, codigo: str) -> Camera | None:
+        return self.db.query(Camera).filter(Camera.codigo_identificador == codigo).first()
+
     def atualizar_status(self, id_camera: int, novo_status: StatusCameraEnum) -> Camera | None:
         camera = self.buscar_por_id(id_camera)
         if camera:

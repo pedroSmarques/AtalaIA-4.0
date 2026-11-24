@@ -44,6 +44,16 @@ class UsuarioDAO:
         self.db.refresh(usuario)
         return usuario
 
+    def atualizar(self, id_usuario: int, nome: str, email: str, cargo: CargoEnum, status_conta: StatusContaEnum) -> Usuario | None:
+        usuario = self.buscar_por_id(id_usuario)
+        if not usuario:
+            return None
+        usuario.nome, usuario.email = nome, email
+        usuario.cargo, usuario.status_conta = cargo, status_conta
+        self.db.commit()
+        self.db.refresh(usuario)
+        return usuario
+
     def atualizar_senha(self, id_usuario: int, nova_senha_hash: str) -> bool:
         usuario = self.buscar_por_id(id_usuario)
         if not usuario:

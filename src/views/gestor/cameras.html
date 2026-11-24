@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'componentes/formulario.html' import modal, campo with context %}
+{% from 'componentes/formulario.html' import modal, campo, campo_select with context %}
 {% block titulo %}Câmeras{% endblock %}
 
 {% block conteudo %}
@@ -48,7 +48,9 @@
         <span style="font-size:12px;color:var(--suave);overflow:hidden;text-overflow:ellipsis">{{ cam.url_rtsp_stream }}</span>
         <span><b class="status {{ cam.status.value | replace(' ','_') }}">{{ cam.status.value | upper }}</b></span>
         <span style="font-size:13px">{{ cam.fps_operacao }} fps</span>
-        <button class="seta" aria-label="Editar câmera" title="Editar">✎</button>
+        <button type="button" class="seta" aria-label="Editar câmera {{ cam.codigo_identificador }}" title="Editar"
+                data-editar="modalEditCamera" data-acao="{{ url_for('gestor.editar_camera', id_camera=cam.id_camera) }}"
+                data-campos="{{ {'codigo_identificador': cam.codigo_identificador, 'setor': cam.fk_Setor_id_setor | string, 'url_rtsp_stream': cam.url_rtsp_stream, 'fps_operacao': cam.fps_operacao | string, 'status': cam.status.value} | tojson | forceescape }}">✎</button>
       </div>
       {% else %}
       <div class="estado-vazio"><p>Nenhuma câmera cadastrada.</p></div>
@@ -57,20 +59,44 @@
   </div>
 </div>
 
-{% call modal('modalCamera', 'Nova câmera', sub='Cadastre uma câmera e vincule ao setor.',
+{% set opcoes_setor = [] %}
+{% for st in setores %}{% set _ = opcoes_setor.append((st.id_setor | string, st.nome_setor)) %}{% endfor %}
+{% set opcoes_status = [('ativa', 'Ativa'), ('inativa', 'Inativa'), ('manutenção', 'Manutenção')] %}
+
+{% call modal('modalCamera', 'Nova câmera', sub='Cadastre uma câmera e vincule ao setor.', acao=url_for('gestor.criar_camera'),
               icone='<rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/>') %}
   <fieldset class="form-secao">
     <legend class="form-secao-titulo">Identificação</legend>
     <div class="form-grid">
       {{ campo('camCodigo', 'codigo_identificador', 'Código identificador', obrigatorio=True, maxlength=50, placeholder='CAM-01') }}
-      {{ campo('camSetor', 'setor', 'Setor', obrigatorio=True, placeholder='Ex.: Soldagem') }}
+      {{ campo_select('camSetor', 'setor', 'Setor', opcoes_setor, obrigatorio=True) }}
     </div>
   </fieldset>
   <fieldset class="form-secao">
     <legend class="form-secao-titulo">Conexão</legend>
     <div class="form-grid">
       {{ campo('camUrl', 'url_rtsp_stream', 'URL RTSP', obrigatorio=True, largo=True, inputmode='url', autocomplete='off', placeholder='rtsp://192.168.0.10:554/stream') }}
-      {{ campo('camFps', 'fps_operacao', 'FPS', tipo='number', inputmode='numeric', valor=30, min=1, max=60, dica='Entre 1 e 60 quadros por segundo.') }}
+      {{ campo('camFps', 'fps_operacao', 'FPS', tipo='number', obrigatorio=True, inputmode='numeric', valor=30, min=1, max=60, dica='Entre 1 e 60 quadros por segundo.') }}
+      {{ campo_select('camStatus', 'status', 'Status', opcoes_status, obrigatorio=True) }}
+    </div>
+  </fieldset>
+{% endcall %}
+
+{% call modal('modalEditCamera', 'Editar câmera', sub='Ajuste a identificação, o setor e a conexão.', salvar='Salvar alterações',
+              icone='<rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/>') %}
+  <fieldset class="form-secao">
+    <legend class="form-secao-titulo">Identificação</legend>
+    <div class="form-grid">
+      {{ campo('editCamCodigo', 'codigo_identificador', 'Código identificador', obrigatorio=True, maxlength=50) }}
+      {{ campo_select('editCamSetor', 'setor', 'Setor', opcoes_setor, obrigatorio=True) }}
+    </div>
+  </fieldset>
+  <fieldset class="form-secao">
+    <legend class="form-secao-titulo">Conexão</legend>
+    <div class="form-grid">
+      {{ campo('editCamUrl', 'url_rtsp_stream', 'URL RTSP', obrigatorio=True, largo=True, inputmode='url', autocomplete='off') }}
+      {{ campo('editCamFps', 'fps_operacao', 'FPS', tipo='number', obrigatorio=True, inputmode='numeric', min=1, max=60) }}
+      {{ campo_select('editCamStatus', 'status', 'Status', opcoes_status, obrigatorio=True) }}
     </div>
   </fieldset>
 {% endcall %}

@@ -24,15 +24,16 @@ def url_da_foto(arquivo: str | None) -> str | None:
 def contexto_usuario() -> dict:
     """Monta o dicionario com os dados do usuario logado para os templates."""
     claims = get_jwt()
-    nome, foto = "", None
+    id_usuario, nome, foto = int(get_jwt_identity()), "", None
     sessao = abrir_sessao()
     try:
-        usuario = UsuarioDAO(sessao).buscar_por_id(int(get_jwt_identity()))
+        usuario = UsuarioDAO(sessao).buscar_por_id(id_usuario)
         if usuario:
             nome, foto = usuario.nome, usuario.foto_perfil
     finally:
         sessao.close()
     return {
+        "usuario_id": id_usuario,
         "usuario_nome": nome,
         "usuario_cargo": claims.get("cargo", ""),
         "usuario_iniciais": iniciais_do_nome(nome),

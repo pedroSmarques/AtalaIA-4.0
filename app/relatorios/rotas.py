@@ -1,14 +1,14 @@
 """Relatorios em PDF: baixar e enviar por e-mail (envio SIMULADO)."""
 from flask import Blueprint, Response, jsonify, request
-from flask_jwt_extended import get_jwt, get_jwt_identity
+from flask_jwt_extended import get_jwt
 
+from app.auditoria import registrar_acao
 from app.autenticacao.decoradores import perfil_requerido
 from app.contexto import contexto_usuario
 from app.relatorios.pdf import gerar_pdf
 from app.relatorios.servico import (
     ErroRelatorio, coletar_dados, nome_do_arquivo, validar_destinatario, validar_pedido,
 )
-from src.dao.log_dao import LogDAO
 from src.database import abrir_sessao
 
 relatorios_bp = Blueprint("relatorios", __name__, url_prefix="/relatorios")
@@ -18,14 +18,6 @@ TODOS_OS_PERFIS = ("Gestor", "Supervisor", "Tecnico")
 
 def _erro_json(mensagem: str, campo: str = "", status: int = 400):
     return jsonify({"ok": False, "mensagem": mensagem, "campo": campo}), status
-
-
-def _registrar_log(sessao, acao: str, detalhes: str):
-    id_usuario = int(get_jwt_identity())
-    LogDAO(sessao).registrar_log(
-        acao, request.remote_addr or "desconhecido",
-        tabela="Relatorio", detalhes=detalhes, id_usuario=id_usuario,
-    )
 
 
 def _descricao(pedido) -> str:
@@ -48,7 +40,7 @@ def baixar():
     sessao = abrir_sessao()
     try:
         dados = coletar_dados(sessao, pedido)
-        _registrar_log(sessao, "RELATORIO_GERADO", _descricao(pedido))
+        registrar_acao("RELATORIO_GERADO", _descricao(pedido), tabela="Relatorio")
     finally:
         sessao.close()
 
@@ -88,7 +80,7 @@ def enviar_por_email():
         _ = conteudo
         # -------------------------------------------------------------
 
-        _registrar_log(sessao, "RELATORIO_EMAIL_SIMULADO", f"{_descricao(pedido)} para {destinatario} (simulado)")
+        registrar_acao("RELATORIO_EMAIL_SIMULADO", f"{_descricao(pedido)} para {destinatario} (simulado)", tabela="Relatorio")
     finally:
         sessao.close()
 
