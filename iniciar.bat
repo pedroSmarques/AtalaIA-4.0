@@ -1,6 +1,7 @@
 @echo off
 chcp 65001 >nul
 setlocal enabledelayedexpansion
+cd /d "%~dp0"
 title ATALAIA 4.0
 
 echo.
@@ -37,9 +38,15 @@ if not exist ".venv\Scripts\python.exe" (
 REM ---- 3. Instalar dependencias -----------------------------------
 echo [3/6] Verificando dependencias...
 .venv\Scripts\python.exe -c "import flask" >nul 2>&1
+
 if errorlevel 1 (
     echo       Instalando... ^(pode demorar alguns minutos na primeira vez^)
-    .venv\Scripts\pip.exe install -r requirements.txt
+    if not exist "requirements.txt" (
+    echo [ERRO] Arquivo requirements.txt nao encontrado!
+    pause
+    exit /b 1
+)
+    .venv\Scripts\python.exe -m pip install -r requirements.txt
     if errorlevel 1 (
         echo [ERRO] Falha ao instalar dependencias.
         echo        Verifique sua conexao com a internet e tente novamente.

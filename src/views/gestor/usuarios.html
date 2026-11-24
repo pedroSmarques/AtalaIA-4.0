@@ -1,7 +1,6 @@
-{% extends 'gestor/base.html' %}
+{% extends 'base.html' %}
+{% from 'componentes/formulario.html' import modal, campo, campo_select, campo_senha with context %}
 {% block titulo %}Usuários{% endblock %}
-{% block nav_usuarios %}ativo{% endblock %}
-{% block nav_mob_usuarios %}ativo{% endblock %}
 
 {% block conteudo %}
 <div class="pag-header">
@@ -9,7 +8,7 @@
     <p class="pag-rotulo">GESTÃO DE PESSOAL</p>
     <h1 class="pag-titulo">Usuários do Sistema</h1>
   </div>
-  <button class="btn btn-primario" data-modal-open="modalUsuario">
+  <button class="btn btn-primario" data-modal-open="modalUsuario" aria-haspopup="dialog">
     <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
     Novo Usuário
   </button>
@@ -22,20 +21,54 @@
       <p class="secao-card-sub">{{ usuarios | length }} usuários cadastrados</p>
     </div>
   </div>
-  <div class="tabela-wrap">
+
+  {# Celular: lista em cards legíveis #}
+  <ul class="lista-cards" aria-label="Equipe">
+    {% for u in usuarios %}
+    <li class="item-card">
+      <div class="item-card-topo">
+        <span class="item-card-avatar" aria-hidden="true">{{ u.nome.split()[:2] | map('first') | join | upper }}</span>
+        <div class="item-card-id">
+          <strong class="item-card-nome">{{ u.nome }}</strong>
+          <span class="item-card-email">{{ u.email }}</span>
+        </div>
+        <b class="status {{ u.status_conta.value }}">{{ u.status_conta.value | upper }}</b>
+      </div>
+      <div class="item-card-linha">
+        <span class="item-card-rotulo">CARGO</span>
+        <span class="item-card-cargo">{{ u.cargo.value }}</span>
+      </div>
+      <div class="item-card-acoes">
+        <button type="button" class="btn btn-secundario" aria-label="Editar {{ u.nome }}">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+          Editar
+        </button>
+        <button type="button" class="btn btn-perigo" aria-label="Bloquear {{ u.nome }}">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>
+          Bloquear
+        </button>
+      </div>
+    </li>
+    {% else %}
+    <li class="estado-vazio"><p>Nenhum usuário cadastrado.</p></li>
+    {% endfor %}
+  </ul>
+
+  {# Tablet e computador: tabela #}
+  <div class="tabela-wrap tabela-so-desktop">
     <div class="tabela">
       <div class="linha cabecalho" style="grid-template-columns:1fr 1.5fr 100px 100px 80px">
         <span>NOME</span><span>E-MAIL</span><span>CARGO</span><span>STATUS</span><span>AÇÕES</span>
       </div>
       {% for u in usuarios %}
       <div class="linha" style="grid-template-columns:1fr 1.5fr 100px 100px 80px">
-        <span style="font-weight:600;color:#fff;font-size:14px">{{ u.nome }}</span>
-        <span style="font-size:13px;color:var(--suave)">{{ u.email }}</span>
+        <span style="font-weight:600;color:#fff;font-size:14px;overflow-wrap:anywhere">{{ u.nome }}</span>
+        <span style="font-size:13px;color:var(--suave);overflow-wrap:anywhere">{{ u.email }}</span>
         <span style="font-size:13px;color:var(--ciano)">{{ u.cargo.value }}</span>
         <span><b class="status {{ u.status_conta.value }}">{{ u.status_conta.value | upper }}</b></span>
         <span style="display:flex;gap:8px">
-          <button class="seta" title="Editar">✎</button>
-          <button class="seta" title="Bloquear" style="color:var(--vermelho)">⊘</button>
+          <button class="seta" title="Editar" aria-label="Editar {{ u.nome }}">✎</button>
+          <button class="seta" title="Bloquear" aria-label="Bloquear {{ u.nome }}" style="color:var(--vermelho)">⊘</button>
         </span>
       </div>
       {% else %}
@@ -45,31 +78,24 @@
   </div>
 </div>
 
-<div id="modalUsuario" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-cabecalho">
-      <h3>Novo Usuário</h3>
-      <button class="modal-fechar" data-modal-close aria-label="Fechar">&times;</button>
+{% call modal('modalUsuario', 'Novo usuário', sub='Cadastre uma pessoa da equipe e defina o acesso.',
+              icone='<circle cx="9" cy="7" r="4"/><path d="M2 21v-1a7 7 0 0114 0v1"/><path d="M20 8v6M23 11h-6"/>') %}
+  <fieldset class="form-secao">
+    <legend class="form-secao-titulo">Dados pessoais</legend>
+    <div class="form-grid">
+      {{ campo('usuNome', 'nome', 'Nome completo', obrigatorio=True, largo=True, autocomplete='name', placeholder='Ex.: Maria da Silva') }}
+      {{ campo('usuEmail', 'email', 'E-mail', tipo='email', obrigatorio=True, autocomplete='email', placeholder='nome@empresa.com') }}
+      {{ campo('usuCpf', 'cpf', 'CPF', obrigatorio=True, inputmode='numeric', data_mascara='cpf', maxlength=14,
+               pattern='[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}', data_msg='Informe o CPF completo: 000.000.000-00.',
+               autocomplete='off', placeholder='000.000.000-00') }}
     </div>
-    <form method="post" action="#">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <div class="campo"><label>Nome completo</label><input type="text" name="nome" required></div>
-      <div class="campo"><label>E-mail</label><input type="email" name="email" required></div>
-      <div class="campo"><label>CPF</label><input type="text" name="cpf" required></div>
-      <div class="campo">
-        <label>Cargo</label>
-        <select name="cargo">
-          <option value="Gestor">Gestor</option>
-          <option value="Supervisor">Supervisor</option>
-          <option value="Tecnico">Técnico</option>
-        </select>
-      </div>
-      <div class="campo"><label>Senha provisória</label><input type="password" name="senha" minlength="8" required></div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
-        <button type="button" class="btn btn-secundario" data-modal-close>Cancelar</button>
-        <button type="submit" class="btn btn-primario">Salvar</button>
-      </div>
-    </form>
-  </div>
-</div>
+  </fieldset>
+  <fieldset class="form-secao">
+    <legend class="form-secao-titulo">Acesso</legend>
+    <div class="form-grid">
+      {{ campo_select('usuCargo', 'cargo', 'Cargo', [('Gestor', 'Gestor'), ('Supervisor', 'Supervisor'), ('Tecnico', 'Técnico')], obrigatorio=True) }}
+      {{ campo_senha('usuSenha', 'senha', 'Senha provisória', obrigatorio=True, dica='Mínimo de 8 caracteres.') }}
+    </div>
+  </fieldset>
+{% endcall %}
 {% endblock %}

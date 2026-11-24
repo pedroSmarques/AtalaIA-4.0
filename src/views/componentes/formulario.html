@@ -1,0 +1,91 @@
+{#
+  Peças compartilhadas de formulário e modal (gestor, supervisor, técnico).
+
+  Uso:
+    {% from 'componentes/formulario.html' import modal, campo, campo_select, campo_senha, campo_texto_longo with context %}
+
+    {% call modal('modalX', 'Título', sub='Subtítulo', icone='<path .../>') %}
+      <fieldset class="form-secao"> ... {{ campo(...) }} ... </fieldset>
+    {% endcall %}
+
+  O formulário é validado em base.js (mensagem embaixo do campo, botão "carregando").
+#}
+
+{# Modal: celular = tela cheia, computador = cartão de até ~560px.
+   Cabeçalho (título + fechar) e rodapé (Cancelar à esquerda, Salvar à direita) ficam fixos. #}
+{% macro modal(id, titulo, sub='', icone='', cor='', salvar='Salvar', acao='#') %}
+<div id="{{ id }}" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="{{ id }}Titulo" aria-hidden="true">
+  <div class="modal">
+    <form class="modal-form" method="post" action="{{ acao }}" novalidate data-validar>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <header class="modal-topo">
+        {% if icone %}
+        <div class="modal-icone {{ cor }}" aria-hidden="true"><svg viewBox="0 0 24 24">{{ icone | safe }}</svg></div>
+        {% endif %}
+        <div class="modal-cabecalho-texto">
+          <h2 class="modal-titulo" id="{{ id }}Titulo">{{ titulo }}</h2>
+          {% if sub %}<p class="modal-sub">{{ sub }}</p>{% endif %}
+        </div>
+        <button type="button" class="modal-fechar" data-modal-close aria-label="Fechar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </header>
+      <div class="modal-corpo">
+        {{ caller() }}
+      </div>
+      <footer class="modal-rodape">
+        <button type="button" class="btn btn-secundario" data-modal-close>Cancelar</button>
+        <button type="submit" class="btn btn-primario">{{ salvar }}</button>
+      </footer>
+    </form>
+  </div>
+</div>
+{% endmacro %}
+
+{# Campo de texto/e-mail/número. Atributos extras entram por kwargs
+   (ex.: inputmode='numeric', data_mascara='cpf', minlength=8). #}
+{% macro campo(id, nome, rotulo, tipo='text', obrigatorio=False, dica='', largo=False, valor='') %}
+<div class="campo{{ ' campo-full' if largo }}">
+  <label for="{{ id }}"{% if obrigatorio %} class="req"{% endif %}>{{ rotulo }}</label>
+  <input type="{{ tipo }}" id="{{ id }}" name="{{ nome }}"{% if valor != '' %} value="{{ valor }}"{% endif %}
+         {% if obrigatorio %}required{% endif %}
+         {% if dica %}aria-describedby="{{ id }}Dica"{% endif %}
+         {% for k, v in kwargs.items() %} {{ k | replace('_', '-') }}="{{ v }}"{% endfor %}>
+  {% if dica %}<p class="campo-dica" id="{{ id }}Dica">{{ dica }}</p>{% endif %}
+</div>
+{% endmacro %}
+
+{# Select estilizado. opcoes = [(valor, rótulo), ...] #}
+{% macro campo_select(id, nome, rotulo, opcoes, obrigatorio=False, largo=False, valor='') %}
+<div class="campo{{ ' campo-full' if largo }}">
+  <label for="{{ id }}"{% if obrigatorio %} class="req"{% endif %}>{{ rotulo }}</label>
+  <select id="{{ id }}" name="{{ nome }}"{% if obrigatorio %} required{% endif %}>
+    {% for v, r in opcoes %}<option value="{{ v }}"{% if v == valor %} selected{% endif %}>{{ r }}</option>{% endfor %}
+  </select>
+</div>
+{% endmacro %}
+
+{# Senha com botão mostrar/ocultar #}
+{% macro campo_senha(id, nome, rotulo, obrigatorio=False, dica='', largo=False, minimo=8) %}
+<div class="campo{{ ' campo-full' if largo }}">
+  <label for="{{ id }}"{% if obrigatorio %} class="req"{% endif %}>{{ rotulo }}</label>
+  <div class="input-icone">
+    <input type="password" id="{{ id }}" name="{{ nome }}" autocomplete="new-password" minlength="{{ minimo }}"
+           {% if obrigatorio %}required{% endif %}
+           {% if dica %}aria-describedby="{{ id }}Dica"{% endif %}>
+    <button type="button" class="input-toggle" data-mostrar-senha aria-label="Mostrar senha" aria-pressed="false">
+      <svg class="olho-aberto" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+      <svg class="olho-fechado" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A9.7 9.7 0 0112 5c6.5 0 10 7 10 7a17 17 0 01-3.2 4.2M6.6 6.6A17 17 0 002 12s3.5 7 10 7a9.6 9.6 0 004.4-1.1"/><path d="M9.9 9.9a3 3 0 004.2 4.2"/></svg>
+    </button>
+  </div>
+  {% if dica %}<p class="campo-dica" id="{{ id }}Dica">{{ dica }}</p>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro campo_texto_longo(id, nome, rotulo, linhas=3, dica='', largo=True) %}
+<div class="campo{{ ' campo-full' if largo }}">
+  <label for="{{ id }}">{{ rotulo }}</label>
+  <textarea id="{{ id }}" name="{{ nome }}" rows="{{ linhas }}"{% if dica %} aria-describedby="{{ id }}Dica"{% endif %}></textarea>
+  {% if dica %}<p class="campo-dica" id="{{ id }}Dica">{{ dica }}</p>{% endif %}
+</div>
+{% endmacro %}

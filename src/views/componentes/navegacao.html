@@ -1,0 +1,137 @@
+{#
+  Navegação única do ATALAIA — usada por todos os perfis.
+  Os itens são escolhidos pelo perfil da rota atual (request.blueprint):
+  cada perfil só enxerga o que pode acessar.
+  - "barra": aparece na barra inferior (celular/tablet até 1023px)
+  - os demais itens vão para o painel "Mais"
+  - no computador (1024px+) todos os itens ficam no menu lateral
+#}
+{% set icones = {
+  'dashboard': '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
+  'alertas':   '<path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21h4"/>',
+  'cameras':   '<rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/>',
+  'usuarios':  '<circle cx="9" cy="7" r="4"/><path d="M2 21v-1a7 7 0 0114 0v1"/><path d="M20 8v6M23 11h-6"/>',
+  'setores':   '<path d="M3 9l9-6 9 6v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  'relatorios':'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',
+  'logs':      '<path d="M4 6h16M4 12h16M4 18h8"/>',
+  'sair':      '<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>'
+} %}
+
+{% set menus = {
+  'gestor': [
+    {'ep': 'gestor.inicio',     'rotulo': 'Dashboard',       'ic': 'dashboard',  'barra': true,  'tambem': []},
+    {'ep': 'gestor.alertas',    'rotulo': 'Alertas',         'ic': 'alertas',    'barra': true,  'tambem': ['gestor.detalhe_alerta']},
+    {'ep': 'gestor.cameras',    'rotulo': 'Câmeras',         'ic': 'cameras',    'barra': true,  'tambem': []},
+    {'ep': 'gestor.usuarios',   'rotulo': 'Usuários',        'ic': 'usuarios',   'barra': true,  'tambem': []},
+    {'ep': 'gestor.setores',    'rotulo': 'Setores',         'ic': 'setores',    'barra': false, 'tambem': []},
+    {'ep': 'gestor.relatorios', 'rotulo': 'Relatórios',      'ic': 'relatorios', 'barra': false, 'tambem': []},
+    {'ep': 'gestor.logs',       'rotulo': 'Logs do sistema', 'ic': 'logs',       'barra': false, 'tambem': []}
+  ],
+  'supervisor': [
+    {'ep': 'supervisor.dashboard',    'rotulo': 'Dashboard',        'ic': 'dashboard',  'barra': true,  'tambem': []},
+    {'ep': 'supervisor.alertas',      'rotulo': 'Alertas',          'ic': 'alertas',    'barra': true,  'tambem': ['supervisor.detalhe']},
+    {'ep': 'supervisor.cameras',      'rotulo': 'Câmeras',          'ic': 'cameras',    'barra': true,  'tambem': []},
+    {'ep': 'supervisor.relatorio_ia', 'rotulo': 'Relatório com IA', 'ic': 'relatorios', 'barra': false, 'tambem': []}
+  ],
+  'tecnico': [
+    {'ep': 'tecnico.dashboard', 'rotulo': 'Dashboard', 'ic': 'dashboard', 'barra': true,  'tambem': []},
+    {'ep': 'tecnico.cameras',   'rotulo': 'Câmeras',   'ic': 'cameras',   'barra': true,  'tambem': []},
+    {'ep': 'tecnico.logs',      'rotulo': 'Logs',      'ic': 'logs',      'barra': false, 'tambem': []}
+  ]
+} %}
+
+{% set itens = menus.get(request.blueprint, []) %}
+{% set no_barra = itens | selectattr('barra') | list %}
+{% set no_mais  = itens | rejectattr('barra') | list %}
+{# posição do botão "Mais": entre o 2º e o 3º item (entre Alertas e Câmeras) #}
+{% set pos_mais = 2 if no_barra | length > 2 else no_barra | length %}
+{% set mais_ativo = no_mais | selectattr('ep', 'equalto', request.endpoint) | list | length > 0 %}
+
+{% macro item_barra(it) %}
+  {% set ativo = request.endpoint == it.ep or request.endpoint in it.tambem %}
+  <a href="{{ url_for(it.ep) }}" class="nav-item {{ 'ativo' if ativo }}" {% if ativo %}aria-current="page"{% endif %}>
+    <svg viewBox="0 0 24 24" aria-hidden="true">{{ icones[it.ic] | safe }}</svg>
+    <span>{{ it.rotulo }}</span>
+    {% if it.ic == 'alertas' and incidentes_pendentes_count is defined and incidentes_pendentes_count > 0 %}
+    <span class="nav-badge">{{ incidentes_pendentes_count }}</span>
+    {% endif %}
+  </a>
+{% endmacro %}
+
+{# ---------- Menu lateral (computador, 1024px+) ---------- #}
+<aside class="sidebar">
+  <div class="marca">
+    <div class="marca-icone">
+      <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+    </div>
+    <div>
+      <h4 class="marca-nome">ATALAIA</h4>
+      <p class="marca-sub">SAFETY INTELLIGENCE</p>
+    </div>
+  </div>
+
+  <p class="secao-label">OPERAÇÃO</p>
+  <nav class="menu" aria-label="Menu principal">
+    {% for it in itens %}
+    {% set ativo = request.endpoint == it.ep or request.endpoint in it.tambem %}
+    <a href="{{ url_for(it.ep) }}" class="menu-item {{ 'ativo' if ativo }}" {% if ativo %}aria-current="page"{% endif %}>
+      <svg viewBox="0 0 24 24" aria-hidden="true">{{ icones[it.ic] | safe }}</svg>
+      {{ it.rotulo }}
+      {% if it.ic == 'alertas' and incidentes_pendentes_count is defined and incidentes_pendentes_count > 0 %}
+      <span class="badge">{{ incidentes_pendentes_count }}</span>
+      {% endif %}
+    </a>
+    {% endfor %}
+  </nav>
+
+  <div class="sidebar-rodape">
+    <form method="post" action="{{ url_for('autenticacao.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button type="submit" class="menu-item menu-sair">
+        <svg viewBox="0 0 24 24" aria-hidden="true">{{ icones['sair'] | safe }}</svg>
+        Sair
+      </button>
+    </form>
+  </div>
+</aside>
+
+{# ---------- Barra inferior (celular e tablet, até 1023px) ---------- #}
+<nav class="nav-bottom" aria-label="Navegação principal">
+  {% for it in no_barra[:pos_mais] %}{{ item_barra(it) }}{% endfor %}
+
+  <button type="button" id="btnMais" class="nav-item nav-mais {{ 'ativo' if mais_ativo }}"
+          aria-haspopup="dialog" aria-expanded="false" aria-controls="painelMais">
+    <span class="mais-icone" aria-hidden="true">
+      <svg class="mais-ic-pontos" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>
+      <svg class="mais-ic-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </span>
+    <span>Mais</span>
+  </button>
+
+  {% for it in no_barra[pos_mais:] %}{{ item_barra(it) }}{% endfor %}
+</nav>
+
+{# ---------- Painel "Mais" (sobe de baixo) ---------- #}
+<div id="maisFundo" class="mais-fundo"></div>
+<div id="painelMais" class="mais-painel" role="dialog" aria-modal="true" aria-label="Mais opções">
+  <ul class="mais-lista">
+    {% for it in no_mais %}
+    {% set ativo = request.endpoint == it.ep or request.endpoint in it.tambem %}
+    <li class="mais-li" style="--i:{{ loop.index0 }}">
+      <a href="{{ url_for(it.ep) }}" class="mais-item {{ 'ativo' if ativo }}" {% if ativo %}aria-current="page"{% endif %}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">{{ icones[it.ic] | safe }}</svg>
+        {{ it.rotulo }}
+      </a>
+    </li>
+    {% endfor %}
+    <li class="mais-li mais-li-sair" style="--i:{{ no_mais | length }}">
+      <form method="post" action="{{ url_for('autenticacao.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="mais-item mais-sair">
+          <svg viewBox="0 0 24 24" aria-hidden="true">{{ icones['sair'] | safe }}</svg>
+          Sair
+        </button>
+      </form>
+    </li>
+  </ul>
+</div>

@@ -1,7 +1,6 @@
-{% extends 'gestor/base.html' %}
+{% extends 'base.html' %}
+{% from 'componentes/formulario.html' import modal, campo with context %}
 {% block titulo %}Câmeras{% endblock %}
-{% block nav_cameras %}ativo{% endblock %}
-{% block nav_mob_cameras %}ativo{% endblock %}
 
 {% block conteudo %}
 <div class="pag-header">
@@ -15,18 +14,18 @@
   </button>
 </div>
 
-<div class="cards-grid" style="grid-template-columns:repeat(3,1fr);max-width:600px;margin-bottom:20px">
-  <div class="card-indicador" style="padding:12px 16px">
+<div class="cards-grid cards-grid-3">
+  <div class="card-indicador card-compacto">
     <div class="card-icone verde"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg></div>
-    <div class="card-corpo"><p class="card-rotulo">ATIVAS</p><p class="card-valor" style="font-size:24px">{{ cameras_ativas }}</p></div>
+    <div class="card-corpo"><p class="card-rotulo">ATIVAS</p><p class="card-valor card-valor-sm">{{ cameras_ativas }}</p></div>
   </div>
-  <div class="card-indicador" style="padding:12px 16px">
+  <div class="card-indicador card-compacto">
     <div class="card-icone vermelho"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg></div>
-    <div class="card-corpo"><p class="card-rotulo">INATIVAS</p><p class="card-valor" style="font-size:24px">{{ cameras_inativas }}</p></div>
+    <div class="card-corpo"><p class="card-rotulo">INATIVAS</p><p class="card-valor card-valor-sm">{{ cameras_inativas }}</p></div>
   </div>
-  <div class="card-indicador" style="padding:12px 16px">
+  <div class="card-indicador card-compacto">
     <div class="card-icone amarelo"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/></svg></div>
-    <div class="card-corpo"><p class="card-rotulo">MANUTENÇÃO</p><p class="card-valor" style="font-size:24px">{{ cameras_manutencao }}</p></div>
+    <div class="card-corpo"><p class="card-rotulo">MANUTENÇÃO</p><p class="card-valor card-valor-sm">{{ cameras_manutencao }}</p></div>
   </div>
 </div>
 
@@ -58,23 +57,21 @@
   </div>
 </div>
 
-<div id="modalCamera" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-cabecalho">
-      <h3>Nova Câmera</h3>
-      <button class="modal-fechar" data-modal-close aria-label="Fechar">&times;</button>
+{% call modal('modalCamera', 'Nova câmera', sub='Cadastre uma câmera e vincule ao setor.',
+              icone='<rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/>') %}
+  <fieldset class="form-secao">
+    <legend class="form-secao-titulo">Identificação</legend>
+    <div class="form-grid">
+      {{ campo('camCodigo', 'codigo_identificador', 'Código identificador', obrigatorio=True, maxlength=50, placeholder='CAM-01') }}
+      {{ campo('camSetor', 'setor', 'Setor', obrigatorio=True, placeholder='Ex.: Soldagem') }}
     </div>
-    <form method="post" action="#">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <div class="campo"><label>Código identificador</label><input type="text" name="codigo_identificador" required></div>
-      <div class="campo"><label>URL RTSP</label><input type="text" name="url_rtsp_stream" required></div>
-      <div class="campo"><label>FPS</label><input type="number" name="fps_operacao" value="30" min="1" max="60"></div>
-      <div class="campo"><label>Setor</label><input type="text" name="setor" required></div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
-        <button type="button" class="btn btn-secundario" data-modal-close>Cancelar</button>
-        <button type="submit" class="btn btn-primario">Salvar</button>
-      </div>
-    </form>
-  </div>
-</div>
+  </fieldset>
+  <fieldset class="form-secao">
+    <legend class="form-secao-titulo">Conexão</legend>
+    <div class="form-grid">
+      {{ campo('camUrl', 'url_rtsp_stream', 'URL RTSP', obrigatorio=True, largo=True, inputmode='url', autocomplete='off', placeholder='rtsp://192.168.0.10:554/stream') }}
+      {{ campo('camFps', 'fps_operacao', 'FPS', tipo='number', inputmode='numeric', valor=30, min=1, max=60, dica='Entre 1 e 60 quadros por segundo.') }}
+    </div>
+  </fieldset>
+{% endcall %}
 {% endblock %}
